@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "809958675420",
+    "project_id": "organize-be620",
+    "storage_bucket": "organize-be620.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:809958675420:android:baeb761257877a653b7519",
+        "android_client_info": {
+          "package_name": "com.andrewmarques.android.organize"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "809958675420-lvke20mj28ncsm6vlbmhe4o275er7g2i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsHoNHg2YXqbDEwPAo71k_jMeNe8-mIgc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "809958675420-lvke20mj28ncsm6vlbmhe4o275er7g2i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
