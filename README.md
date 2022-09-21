@@ -7,3 +7,10 @@ Criar um aplicativo que ajude as pessoas a administrar sua vida financeira de ma
 Conhecimentos Aplicados:
 Java, XML e Git
 Banco de Dados Firebase
+
+Login e Cadastro
+Slider
+Adiministração de dados
+Navegação de Telas
+Gerenciamento de dados Local e WEB
+Controle de Versionamento
