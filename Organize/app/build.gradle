@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'com.andrewmarques.android.organize'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.andrewmarques.android.organize"
         minSdk 21
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -23,6 +23,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    dataBinding {
+        enabled = true
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -40,5 +45,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:21.1.1'
     implementation 'com.google.firebase:firebase-database:20.0.6'
     implementation 'com.google.firebase:firebase-auth:21.0.8'
+
+    implementation 'com.heinrichreimersoftware:material-intro:2.0.0'
 
 }

@@ -2,9 +2,9 @@ package com.andrewmarques.android.organize;
 
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.heinrichreimersoftware.materialintro.app.IntroActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends IntroActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
