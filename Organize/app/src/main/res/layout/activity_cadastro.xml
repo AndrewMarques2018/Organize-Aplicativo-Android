@@ -25,10 +25,13 @@
 
     <EditText
         android:id="@+id/editTextTextPersonName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
         android:layout_marginBottom="8dp"
         android:drawableLeft="@drawable/ic_person"
+        android:drawablePadding="5dp"
         android:ems="10"
         android:hint="nome"
         android:inputType="textPersonName"
@@ -42,10 +45,13 @@
 
     <EditText
         android:id="@+id/editTextTextPersonName2"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
         android:layout_marginBottom="8dp"
         android:drawableLeft="@drawable/ic_email"
+        android:drawablePadding="5dp"
         android:ems="10"
         android:hint="email"
         android:inputType="textPersonName|textEmailAddress"
@@ -58,9 +64,12 @@
 
     <EditText
         android:id="@+id/editTextTextPersonName3"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
         android:drawableLeft="@drawable/ic_lock"
+        android:drawablePadding="5dp"
         android:ems="10"
         android:hint="password"
         android:inputType="textPersonName|textPassword"
@@ -73,11 +82,14 @@
 
     <Button
         android:id="@+id/button2"
-        android:textColor="@color/colorTextSlider"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:backgroundTint="@color/colorPrimary"
         android:text="Cadastre-se"
+        android:textColor="@color/colorBackGround"
         app:layout_constraintBottom_toTopOf="@+id/textView10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -85,11 +97,11 @@
 
     <TextView
         android:id="@+id/textView10"
-        android:textColor="@color/colorTextSlider"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:text="Termos de uso"
+        android:textColor="@color/colorTextSlider"
+        android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
