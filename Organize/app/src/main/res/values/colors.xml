@@ -6,6 +6,7 @@
     <color name="colorAccent">#ffffff</color>
     <color name="colorBackGround">@android:color/white</color>
     <color name="colorTextSlider">#000000</color>
+    <color name="colorCinza">#cccccc</color>
 
 
 </resources>

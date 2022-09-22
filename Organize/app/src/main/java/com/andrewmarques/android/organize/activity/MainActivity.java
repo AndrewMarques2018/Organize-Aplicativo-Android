@@ -1,7 +1,10 @@
-package com.andrewmarques.android.organize;
+package com.andrewmarques.android.organize.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
+import com.andrewmarques.android.organize.R;
 import com.heinrichreimersoftware.materialintro.app.IntroActivity;
 import com.heinrichreimersoftware.materialintro.slide.FragmentSlide;
 
@@ -39,5 +42,21 @@ public class MainActivity extends IntroActivity {
                 .build()
         );
 
+        addSlide( new FragmentSlide.Builder()
+                .background(android.R.color.white)
+                .fragment(R.layout.intro_cadastro)
+                .canGoForward(false) // impede o usuario de passar o slide
+                .build()
+        );
+
     }
+
+    public void btEntrar (View view) {
+        startActivity( new Intent( this, LoginActivity.class) );
+    }
+
+    public void btCadastrar (View view) {
+        startActivity( new Intent( this, CadastroActivity.class) );
+    }
+
 }
