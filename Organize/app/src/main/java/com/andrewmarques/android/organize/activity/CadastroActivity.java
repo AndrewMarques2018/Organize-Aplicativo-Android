@@ -16,6 +16,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 
 public class CadastroActivity extends AppCompatActivity {
 
@@ -45,6 +48,7 @@ public class CadastroActivity extends AppCompatActivity {
                 if(!nome.isEmpty() && !senha.isEmpty() && !email.isEmpty()){
                     user = new User(nome, email, senha);
                     cadastrarUser();
+
                 }else {
                     Toast.makeText(CadastroActivity.this,
                             "Preencha os campos",Toast.LENGTH_SHORT).show();
@@ -65,8 +69,27 @@ public class CadastroActivity extends AppCompatActivity {
                     Toast.makeText(CadastroActivity.this,
                             "Sucesso ao cadastrar usuario", Toast.LENGTH_SHORT).show();
                 }else{
+
+                    String excecao = "";
+
+                    try {
+                        throw task.getException();
+                    }catch (FirebaseAuthWeakPasswordException e) {
+                        excecao = "Digite uma senha mais forte";
+
+                    }catch (FirebaseAuthInvalidCredentialsException e) {
+                        excecao = "Por favor, digite um email válido";
+
+                    }catch (FirebaseAuthUserCollisionException e) {
+                        excecao = "Esta conta já foi cadastrada";
+
+                    }catch (Exception e) {
+                        excecao = "Erro ao cadastrar usuario: " + e.getMessage();
+                        e.printStackTrace();
+                    }
+
                     Toast.makeText(CadastroActivity.this,
-                            "Erro ao cadastrar usuario", Toast.LENGTH_SHORT).show();
+                            excecao, Toast.LENGTH_SHORT).show();
                 }
             }
         });
