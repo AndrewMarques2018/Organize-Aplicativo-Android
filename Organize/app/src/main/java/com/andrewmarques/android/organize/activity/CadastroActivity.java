@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.andrewmarques.android.organize.R;
 import com.andrewmarques.android.organize.config.ConfigFirebase;
+import com.andrewmarques.android.organize.helper.Base64Custom;
 import com.andrewmarques.android.organize.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -66,6 +67,10 @@ public class CadastroActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
+
+                    String idUser = Base64Custom.codificarBase64(user.getEmail());
+                    user.setIdUser(idUser);
+                    user.salvar();
                     finish();
 
                 }else{
@@ -95,5 +100,4 @@ public class CadastroActivity extends AppCompatActivity {
         });
 
     }
-
 }
