@@ -1,5 +1,6 @@
 package com.andrewmarques.android.organize.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.andrewmarques.android.organize.databinding.ActivityPrincipalBinding;
@@ -39,11 +40,11 @@ public class PrincipalActivity extends AppCompatActivity {
     }
 
     public void addReceita (View view){
-
+        startActivity(new Intent(this, ReceitasActivity.class));
     }
 
     public void addDespesa (View view){
-
+        startActivity(new Intent( this, DespesasActivity.class));
     }
 
 }
