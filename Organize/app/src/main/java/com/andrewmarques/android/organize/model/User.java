@@ -10,6 +10,8 @@ public class User {
     private String email;
     private String senha;
     private String idUser;
+    private Double receitaTotal = 0.00;
+    private Double despesaTotal = 0.00;
 
     public User(String nome, String email, String senha) {
         this.nome = nome;
@@ -59,5 +61,21 @@ public class User {
 
     public void setIdUser(String idUser) {
         this.idUser = idUser;
+    }
+
+    public Double getReceitaTotal() {
+        return receitaTotal;
+    }
+
+    public void setReceitaTotal(Double receitaTotal) {
+        this.receitaTotal = receitaTotal;
+    }
+
+    public Double getDespesaTotal() {
+        return despesaTotal;
+    }
+
+    public void setDespesaTotal(Double despesaTotal) {
+        this.despesaTotal = despesaTotal;
     }
 }
