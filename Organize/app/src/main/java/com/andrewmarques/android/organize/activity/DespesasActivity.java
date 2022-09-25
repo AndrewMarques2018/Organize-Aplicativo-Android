@@ -36,9 +36,9 @@ public class DespesasActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_despesas);
 
-        campoData = findViewById(R.id.editDespesaData);
-        campoCategoria = findViewById(R.id.editDespesaCategoria);
-        campoDescricao = findViewById(R.id.editDespesaDescricao);
+        campoData = findViewById(R.id.editDespesasData);
+        campoCategoria = findViewById(R.id.editDespesasCategoria);
+        campoDescricao = findViewById(R.id.editDespesasDescricao);
         campoValor = findViewById(R.id.editDespesasValor);
 
         // preencher data padrão, data atual
@@ -104,8 +104,6 @@ public class DespesasActivity extends AppCompatActivity {
                 return false;
             }
         }
-
-
 
         return true;
     }
