@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorPrimary">#01c7d2</color>
-    <color name="colorPrimaryDark">#00b2bc</color>
-    <color name="colorAccent">#ff706a</color>
-
+    <color name="colorPrimary">#01C7D2</color>
+    <color name="colorPrimaryDark">#00B2BC</color>
+    <color name="colorAccent">#FF706A</color>
     <color name="colorBackGround">@android:color/white</color>
     <color name="colorTextSlider">#000000</color>
-    <color name="colorCinza">#cccccc</color>
+    <color name="colorCinza">#CCCCCC</color>
+
+    <!-- Cores fab despesas !-->
+    <color name="colorPrimaryDespesa">#FF706A</color>
+    <color name="colorPrimaryDarkDespesa">#E66560</color>
+    <color name="colorAccentDespesa">#FF706A</color>
+
+    <!-- Cores fab receitas !-->
+    <color name="colorPrimaryReceita">#00D39E</color>
+    <color name="colorPrimaryDarkReceita">#00BE8B</color>
+    <color name="colorAccentReceita">#00D39E</color>
 
 
 </resources>
