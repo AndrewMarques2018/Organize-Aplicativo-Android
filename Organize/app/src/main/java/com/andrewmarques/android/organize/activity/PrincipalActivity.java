@@ -32,7 +32,9 @@ import java.text.DecimalFormat;
 public class PrincipalActivity extends AppCompatActivity {
 
     private FirebaseAuth auth = ConfigFirebase.getAuth();
-    private DatabaseReference firebase = ConfigFirebase.getDatabaseReference();;
+    private DatabaseReference firebase = ConfigFirebase.getDatabaseReference();
+    private DatabaseReference userRef;
+    private ValueEventListener valueEventListenerUser;
     private AppBarConfiguration appBarConfiguration;
     private ActivityPrincipalBinding binding;
     private CalendarView calendarView;
@@ -56,14 +58,11 @@ public class PrincipalActivity extends AppCompatActivity {
 
         calendarView.setPreviousButtonImage(getResources().getDrawable(R.drawable.ic_esquerda_preto));
         calendarView.setForwardButtonImage(getResources().getDrawable(R.drawable.ic_direita_preto));
+    }
 
-        binding.fabMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-
+    @Override
+    protected void onStart() {
+        super.onStart();
         recuperarResumo();
     }
 
@@ -71,19 +70,20 @@ public class PrincipalActivity extends AppCompatActivity {
 
         String emailUser = auth.getCurrentUser().getEmail();
         String idUser = Base64Custom.codificarBase64(emailUser);
-        DatabaseReference userRef = firebase.child("usuarios").child(idUser);
+        userRef = firebase.child("usuarios").child(idUser);
 
-        userRef.addValueEventListener(new ValueEventListener() {
+        valueEventListenerUser = userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
 
+                assert user != null;
                 despesaTotal = user.getDespesaTotal();
                 receitaTotal = user.getReceitaTotal();
                 resumoTotal = receitaTotal - despesaTotal;
 
-                DecimalFormat decimalFormat = new DecimalFormat( "R$ 0.##" );
-                txtSaldo.setText(decimalFormat.format(decimalFormat));
+                DecimalFormat decimalFormat = new DecimalFormat( "0.##" );
+                txtSaldo.setText("R$" + decimalFormat.format(resumoTotal));
                 txtSaudacao.setText("Olá " + user.getNome());
             }
 
@@ -92,8 +92,6 @@ public class PrincipalActivity extends AppCompatActivity {
 
             }
         });
-
-
     }
 
     @Override
@@ -122,4 +120,9 @@ public class PrincipalActivity extends AppCompatActivity {
         startActivity(new Intent( this, DespesasActivity.class));
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        userRef.removeEventListener( valueEventListenerUser );
+    }
 }
