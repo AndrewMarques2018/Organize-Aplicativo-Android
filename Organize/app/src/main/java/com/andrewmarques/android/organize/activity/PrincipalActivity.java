@@ -5,9 +5,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import com.andrewmarques.android.organize.R;
+import com.andrewmarques.android.organize.adapter.AdapterMovimentacao;
 import com.andrewmarques.android.organize.config.ConfigFirebase;
 import com.andrewmarques.android.organize.databinding.ActivityPrincipalBinding;
 import com.andrewmarques.android.organize.helper.Base64Custom;
+import com.andrewmarques.android.organize.model.Movimentacao;
 import com.andrewmarques.android.organize.model.User;
 import com.applandeo.materialcalendarview.CalendarView;
 import com.applandeo.materialcalendarview.listeners.OnCalendarPageChangeListener;
@@ -25,8 +27,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import androidx.navigation.ui.AppBarConfiguration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class PrincipalActivity extends AppCompatActivity {
@@ -35,6 +41,7 @@ public class PrincipalActivity extends AppCompatActivity {
     private DatabaseReference firebase = ConfigFirebase.getDatabaseReference();
     private DatabaseReference userRef;
     private ValueEventListener valueEventListenerUser;
+
     private AppBarConfiguration appBarConfiguration;
     private ActivityPrincipalBinding binding;
     private CalendarView calendarView;
@@ -42,6 +49,10 @@ public class PrincipalActivity extends AppCompatActivity {
     private Double despesaTotal = 0.00;
     private Double receitaTotal = 0.00;
     private Double resumoTotal = 0.00;
+
+    private RecyclerView recyclerView;
+    private AdapterMovimentacao adapterMovimentacao;
+    private List<Movimentacao> movimentacoes = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +69,14 @@ public class PrincipalActivity extends AppCompatActivity {
 
         calendarView.setPreviousButtonImage(getResources().getDrawable(R.drawable.ic_esquerda_preto));
         calendarView.setForwardButtonImage(getResources().getDrawable(R.drawable.ic_direita_preto));
+
+        adapterMovimentacao = new AdapterMovimentacao(movimentacoes, this);
+
+        recyclerView = findViewById(R.id.recycleMovimentos);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(adapterMovimentacao);
     }
 
     @Override
