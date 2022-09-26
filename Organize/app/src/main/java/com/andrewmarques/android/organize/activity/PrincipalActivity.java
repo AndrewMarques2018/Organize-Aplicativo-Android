@@ -1,5 +1,6 @@
 package com.andrewmarques.android.organize.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -22,13 +23,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.navigation.ui.AppBarConfiguration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -55,6 +60,7 @@ public class PrincipalActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private AdapterMovimentacao adapterMovimentacao;
     private List<Movimentacao> movimentacoes = new ArrayList<>();
+    private Movimentacao movimentacao;
     private DatabaseReference movimentacaoRef;
     private ValueEventListener valueEventListenerMovimentacoes;
     private String mesAnoSelecionado;
@@ -74,6 +80,7 @@ public class PrincipalActivity extends AppCompatActivity {
         textViewTeste = findViewById(R.id.textViewTest);
 
         configuracaoCalendarView();
+        swipe();
 
         adapterMovimentacao = new AdapterMovimentacao(movimentacoes, this);
 
@@ -91,6 +98,70 @@ public class PrincipalActivity extends AppCompatActivity {
         recuperarMovimentacoes();
     }
 
+    public void swipe () {
+
+        ItemTouchHelper.Callback itemTouch = new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+
+               int dragFlags = ItemTouchHelper.ACTION_STATE_IDLE;
+               int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
+                return makeMovementFlags(dragFlags, swipeFlags);
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                excluirMovimentacao(viewHolder);
+            }
+        };
+
+        new ItemTouchHelper(itemTouch).attachToRecyclerView(recyclerView);
+    }
+
+    public void excluirMovimentacao ( RecyclerView.ViewHolder viewHolder) {
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("Excluir Movimentação da Conta");
+        alertDialog.setMessage("Você tem certeza que deseja realmente excluir?");
+        alertDialog.setCancelable(false);
+
+        alertDialog.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                int position = viewHolder.getAdapterPosition();
+                movimentacao = movimentacoes.get(position);
+
+                String emailUser = auth.getCurrentUser().getEmail();
+                String idUser = Base64Custom.codificarBase64(emailUser);
+                movimentacaoRef = firebase.child("movimentacao").child(idUser).child(mesAnoSelecionado);
+
+                movimentacaoRef.child(movimentacao.getKey()).removeValue();
+                adapterMovimentacao.notifyItemRemoved(position);
+            }
+        });
+
+        alertDialog.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(PrincipalActivity.this,
+                        "CAncelado",
+                        Toast.LENGTH_SHORT).show();
+
+                adapterMovimentacao.notifyDataSetChanged();
+            }
+        });
+
+        AlertDialog alert = alertDialog.create();
+        alert.show();
+
+
+    }
+
     public void recuperarMovimentacoes (){
 
         String emailUser = auth.getCurrentUser().getEmail();
@@ -104,6 +175,7 @@ public class PrincipalActivity extends AppCompatActivity {
                 movimentacoes.clear();
 
                 for (DataSnapshot dados: snapshot.getChildren()){
+                    movimentacao.setKey( dados.getKey() );
                     movimentacoes.add(dados.getValue(Movimentacao.class));
                 }
 
