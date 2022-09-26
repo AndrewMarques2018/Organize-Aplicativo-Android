@@ -22,4 +22,12 @@ public class DateCustom {
         return mes + ano;
     }
 
+    public static String parseMillisOfMesAno (Long dataMillis){
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMyyyy");
+        String dataString = simpleDateFormat.format(dataMillis);
+
+        return dataString;
+    }
+
 }

@@ -27,6 +27,13 @@
             android:elevation="0dp"
             app:popupTheme="@style/Theme.Organize.PopupOverlay" />
 
+        <TextView
+            android:id="@+id/textViewTest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textSize="20sp" />
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
@@ -77,6 +84,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycleMovimentos"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
 
     <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/fabMenu"
@@ -143,14 +159,5 @@
             fab:fab_size="mini" />
 
     </com.github.clans.fab.FloatingActionMenu>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycleMovimentos"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

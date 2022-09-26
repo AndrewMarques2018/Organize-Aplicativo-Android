@@ -1,7 +1,6 @@
 package com.andrewmarques.android.organize.activity;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import com.andrewmarques.android.organize.R;
@@ -9,10 +8,13 @@ import com.andrewmarques.android.organize.adapter.AdapterMovimentacao;
 import com.andrewmarques.android.organize.config.ConfigFirebase;
 import com.andrewmarques.android.organize.databinding.ActivityPrincipalBinding;
 import com.andrewmarques.android.organize.helper.Base64Custom;
+import com.andrewmarques.android.organize.helper.DateCustom;
 import com.andrewmarques.android.organize.model.Movimentacao;
 import com.andrewmarques.android.organize.model.User;
 import com.applandeo.materialcalendarview.CalendarView;
 import com.applandeo.materialcalendarview.listeners.OnCalendarPageChangeListener;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -53,6 +55,10 @@ public class PrincipalActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private AdapterMovimentacao adapterMovimentacao;
     private List<Movimentacao> movimentacoes = new ArrayList<>();
+    private DatabaseReference movimentacaoRef;
+    private ValueEventListener valueEventListenerMovimentacoes;
+    private String mesAnoSelecionado;
+    private TextView textViewTeste;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +66,14 @@ public class PrincipalActivity extends AppCompatActivity {
 
         binding = ActivityPrincipalBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        binding.toolbar.setTitle("Organize");
         setSupportActionBar(binding.toolbar);
 
         txtSaudacao = findViewById(R.id.txtSaudacao);
         txtSaldo = findViewById(R.id.txtSaldo);
         calendarView = findViewById(R.id.calendarView);
+        textViewTeste = findViewById(R.id.textViewTest);
 
-        calendarView.setPreviousButtonImage(getResources().getDrawable(R.drawable.ic_esquerda_preto));
-        calendarView.setForwardButtonImage(getResources().getDrawable(R.drawable.ic_direita_preto));
+        configuracaoCalendarView();
 
         adapterMovimentacao = new AdapterMovimentacao(movimentacoes, this);
 
@@ -83,6 +88,33 @@ public class PrincipalActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         recuperarResumo();
+        recuperarMovimentacoes();
+    }
+
+    public void recuperarMovimentacoes (){
+
+        String emailUser = auth.getCurrentUser().getEmail();
+        String idUser = Base64Custom.codificarBase64(emailUser);
+        movimentacaoRef = firebase.child("movimentacao").child(idUser).child(mesAnoSelecionado);
+
+        valueEventListenerMovimentacoes = movimentacaoRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                movimentacoes.clear();
+
+                for (DataSnapshot dados: snapshot.getChildren()){
+                    movimentacoes.add(dados.getValue(Movimentacao.class));
+                }
+
+                adapterMovimentacao.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     public void recuperarResumo (){
@@ -109,6 +141,31 @@ public class PrincipalActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
+            }
+        });
+    }
+
+    public void configuracaoCalendarView (){
+        calendarView.setPreviousButtonImage(getResources().getDrawable(R.drawable.ic_esquerda_preto));
+        calendarView.setForwardButtonImage(getResources().getDrawable(R.drawable.ic_direita_preto));
+
+        mesAnoSelecionado = DateCustom.parseMillisOfMesAno(calendarView.getCurrentPageDate().getTimeInMillis());
+
+        calendarView.setOnForwardPageChangeListener(new OnCalendarPageChangeListener() {
+            @Override
+            public void onChange() {
+                mesAnoSelecionado = DateCustom.parseMillisOfMesAno(calendarView.getCurrentPageDate().getTimeInMillis());
+                movimentacaoRef.removeEventListener(valueEventListenerMovimentacoes);
+                recuperarMovimentacoes();
+            }
+        });
+
+        calendarView.setOnPreviousPageChangeListener(new OnCalendarPageChangeListener() {
+            @Override
+            public void onChange() {
+                mesAnoSelecionado = DateCustom.parseMillisOfMesAno(calendarView.getCurrentPageDate().getTimeInMillis());
+                movimentacaoRef.removeEventListener(valueEventListenerMovimentacoes);
+                recuperarMovimentacoes();
             }
         });
     }
@@ -143,5 +200,6 @@ public class PrincipalActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         userRef.removeEventListener( valueEventListenerUser );
+        movimentacaoRef.removeEventListener(valueEventListenerMovimentacoes);
     }
 }
