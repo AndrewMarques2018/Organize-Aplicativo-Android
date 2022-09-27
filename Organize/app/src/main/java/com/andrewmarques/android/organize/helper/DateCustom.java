@@ -1,7 +1,6 @@
 package com.andrewmarques.android.organize.helper;
 
 import java.text.SimpleDateFormat;
-import java.util.logging.SimpleFormatter;
 
 public class DateCustom {
 

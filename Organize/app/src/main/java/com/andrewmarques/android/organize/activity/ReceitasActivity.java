@@ -99,9 +99,7 @@ public class ReceitasActivity extends AppCompatActivity {
             }else
 
             if (txtDescricao.isEmpty()) {
-                Toast.makeText(ReceitasActivity.this,
-                        "Categoria não foi preenchido!",
-                        Toast.LENGTH_SHORT).show();
+                campoDescricao.setText("Sem Descrição");
                 return false;
             }
         }

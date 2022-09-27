@@ -10,10 +10,6 @@ import com.andrewmarques.android.organize.R;
 import com.andrewmarques.android.organize.model.Movimentacao;
 import java.util.List;
 
-/**
- * Created by Jamilton Damasceno
- */
-
 public class AdapterMovimentacao extends RecyclerView.Adapter<AdapterMovimentacao.MyViewHolder> {
 
     List<Movimentacao> movimentacoes;
@@ -59,7 +55,7 @@ public class AdapterMovimentacao extends RecyclerView.Adapter<AdapterMovimentaca
         public MyViewHolder(View itemView) {
             super(itemView);
 
-            titulo = itemView.findViewById(R.id.textAdapterTitulo);
+            titulo = itemView.findViewById(R.id.textAdapterDescricao);
             valor = itemView.findViewById(R.id.textAdapterValor);
             categoria = itemView.findViewById(R.id.textAdapterCategoria);
         }

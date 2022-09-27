@@ -14,8 +14,6 @@ import com.andrewmarques.android.organize.model.Movimentacao;
 import com.andrewmarques.android.organize.model.User;
 import com.applandeo.materialcalendarview.CalendarView;
 import com.applandeo.materialcalendarview.listeners.OnCalendarPageChangeListener;
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,7 +48,6 @@ public class PrincipalActivity extends AppCompatActivity {
     private DatabaseReference userRef;
     private ValueEventListener valueEventListenerUser;
 
-    private AppBarConfiguration appBarConfiguration;
     private ActivityPrincipalBinding binding;
     private CalendarView calendarView;
     private TextView txtSaudacao, txtSaldo;
@@ -64,7 +62,6 @@ public class PrincipalActivity extends AppCompatActivity {
     private DatabaseReference movimentacaoRef;
     private ValueEventListener valueEventListenerMovimentacoes;
     private String mesAnoSelecionado;
-    private TextView textViewTeste;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,14 +74,13 @@ public class PrincipalActivity extends AppCompatActivity {
         txtSaudacao = findViewById(R.id.txtSaudacao);
         txtSaldo = findViewById(R.id.txtSaldo);
         calendarView = findViewById(R.id.calendarView);
-        textViewTeste = findViewById(R.id.textViewTest);
+        recyclerView = findViewById(R.id.recycleMovimentos);
 
         configuracaoCalendarView();
         swipe();
 
         adapterMovimentacao = new AdapterMovimentacao(movimentacoes, this);
 
-        recyclerView = findViewById(R.id.recycleMovimentos);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
@@ -106,7 +102,7 @@ public class PrincipalActivity extends AppCompatActivity {
 
                int dragFlags = ItemTouchHelper.ACTION_STATE_IDLE;
                int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
-                return makeMovementFlags(dragFlags, swipeFlags);
+               return makeMovementFlags(dragFlags, swipeFlags);
             }
 
             @Override
@@ -142,6 +138,7 @@ public class PrincipalActivity extends AppCompatActivity {
 
                 movimentacaoRef.child(movimentacao.getKey()).removeValue();
                 adapterMovimentacao.notifyItemRemoved(position);
+
                 atualizarSaldo();
             }
         });
@@ -150,7 +147,7 @@ public class PrincipalActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Toast.makeText(PrincipalActivity.this,
-                        "CAncelado",
+                        "Cancelado",
                         Toast.LENGTH_SHORT).show();
 
                 adapterMovimentacao.notifyDataSetChanged();
@@ -195,8 +192,10 @@ public class PrincipalActivity extends AppCompatActivity {
                 movimentacoes.clear();
 
                 for (DataSnapshot dados: snapshot.getChildren()){
+                    Movimentacao movimentacao = dados.getValue(Movimentacao.class);
                     movimentacao.setKey( dados.getKey() );
-                    movimentacoes.add(dados.getValue(Movimentacao.class));
+
+                    movimentacoes.add(movimentacao);
                 }
 
                 adapterMovimentacao.notifyDataSetChanged();
@@ -220,12 +219,11 @@ public class PrincipalActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
 
-                assert user != null;
                 despesaTotal = user.getDespesaTotal();
                 receitaTotal = user.getReceitaTotal();
                 resumoTotal = receitaTotal - despesaTotal;
 
-                DecimalFormat decimalFormat = new DecimalFormat( "0.##" );
+                DecimalFormat decimalFormat = new DecimalFormat( "0.00" );
                 txtSaldo.setText("R$" + decimalFormat.format(resumoTotal));
                 txtSaudacao.setText("Olá " + user.getNome());
             }

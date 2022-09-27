@@ -49,7 +49,7 @@
             android:id="@+id/editReceitasData"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Ex: 19/10/2022" />
+            android:hint="Data Ex: 19/10/2022" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -67,7 +67,7 @@
             android:id="@+id/editReceitasCategoria"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Ex: salário" />
+            android:hint="Categoria Ex: salário" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -85,7 +85,7 @@
             android:id="@+id/editReceitasDescricao"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Ex: salário mensal" />
+            android:hint="Descrição Ex: salário do mes de julho" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

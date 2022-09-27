@@ -79,4 +79,13 @@ public class Movimentacao {
     public void setValor(Double valor) {
         this.valor = valor;
     }
+
+    @Override
+    public String toString() {
+        return "Movimentacao{" +
+                "data='" + data + '\'' +
+                ", valor=" + valor +
+                ", key='" + key + '\'' +
+                '}';
+    }
 }

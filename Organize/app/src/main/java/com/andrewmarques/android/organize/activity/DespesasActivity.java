@@ -99,9 +99,7 @@ public class DespesasActivity extends AppCompatActivity {
             }else
 
             if (txtDescricao.isEmpty()) {
-                Toast.makeText(DespesasActivity.this,
-                        "Categoria não foi preenchido!",
-                        Toast.LENGTH_SHORT).show();
+                campoDescricao.setText("Sem Descrição");
                 return false;
             }
         }

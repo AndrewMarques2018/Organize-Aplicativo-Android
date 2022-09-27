@@ -2,8 +2,6 @@ package com.andrewmarques.android.organize.helper;
 
 import android.util.Base64;
 
-import java.nio.charset.StandardCharsets;
-
 public class Base64Custom {
 
     public static String codificarBase64 (String txt){
