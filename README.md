@@ -8,9 +8,7 @@ Conhecimentos Aplicados:
 Java, XML e Git
 Banco de Dados Firebase
 
-Login e Cadastro
+Versão 1:
 Slider
-Adiministração de dados
-Navegação de Telas
-Gerenciamento de dados Local e WEB
-Controle de Versionamento
+Autentificação Firebase
+Banco de dados realtime Firebase
