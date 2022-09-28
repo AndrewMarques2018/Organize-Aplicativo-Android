@@ -8,7 +8,7 @@ import com.google.firebase.database.DatabaseReference;
 
 import java.io.Serializable;
 
-public class Movimentacao implements Serializable {
+public class Movimentacao implements Serializable, Comparable<Movimentacao>{
 
     private String data;
     private String categoria;
@@ -18,6 +18,20 @@ public class Movimentacao implements Serializable {
     private String key;
 
     public Movimentacao() {
+    }
+
+    public void atualizar (String key){
+
+        FirebaseAuth auth = ConfigFirebase.getAuth();
+        String idUser = Base64Custom.codificarBase64( auth.getCurrentUser().getEmail() );
+
+        DatabaseReference firebase = ConfigFirebase.getDatabaseReference();
+        firebase.child("movimentacao")
+                .child(idUser)
+                .child(DateCustom.mesAno(data))
+                .child(key)
+                .setValue(this);
+
     }
 
     public void salvar (){
@@ -93,5 +107,10 @@ public class Movimentacao implements Serializable {
                 ", valor=" + valor +
                 ", key='" + key + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Movimentacao o) {
+        return this.data.compareTo(o.getData());
     }
 }

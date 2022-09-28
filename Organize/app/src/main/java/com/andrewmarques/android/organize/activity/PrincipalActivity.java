@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /*
@@ -253,6 +254,7 @@ public class PrincipalActivity extends AppCompatActivity {
                     movimentacoes.add(movimentacao);
                 }
 
+                Collections.sort(movimentacoes);
                 configurarSaldoMensal();
 
                 adapterMovimentacao.notifyDataSetChanged();

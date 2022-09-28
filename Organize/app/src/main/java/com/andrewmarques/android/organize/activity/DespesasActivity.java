@@ -28,6 +28,7 @@ public class DespesasActivity extends AppCompatActivity {
     private TextInputEditText campoData, campoDescricao, campoCategoria;
     private EditText campoValor;
     private Movimentacao movimentacao;
+    private String keyMovimentacaoRecuperada;
     private DatabaseReference firebase = ConfigFirebase.getDatabaseReference();
     private FirebaseAuth auth = ConfigFirebase.getAuth();
     private Double despesaTotal;
@@ -59,7 +60,7 @@ public class DespesasActivity extends AppCompatActivity {
                 campoDescricao.setText(movimentacao.getDescricao());
 
                 campoValor.setText(new DecimalFormat( "0.00" ).format(movimentacao.getValor()).replace(',', '.'));
-
+                keyMovimentacaoRecuperada = movimentacao.getKey();
             }
 
         }catch (Exception ignored){
@@ -69,6 +70,23 @@ public class DespesasActivity extends AppCompatActivity {
 
     public void salvarDespesa (View view){
 
+        if (movimentacao != null){
+            if(validarCamposDespesas()){
+
+                Double valorRecuperado = Double.parseDouble(campoValor.getText().toString());
+
+                movimentacao.setValor( valorRecuperado );
+                movimentacao.setCategoria(campoCategoria.getText().toString());
+                movimentacao.setDescricao(campoDescricao.getText().toString());
+                movimentacao.setData(campoData.getText().toString());
+
+                despesaAtualizada = despesaTotal + valorRecuperado;
+                atualizarDespesas(despesaAtualizada);
+
+                movimentacao.atualizar(keyMovimentacaoRecuperada);
+                finish();
+            }
+        }else
         if(validarCamposDespesas()){
 
             Double valorRecuperado = Double.parseDouble(campoValor.getText().toString());

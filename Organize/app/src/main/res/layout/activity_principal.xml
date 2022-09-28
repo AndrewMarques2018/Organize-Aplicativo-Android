@@ -126,7 +126,7 @@
         fab:menu_colorNormal="@color/colorAccent"
         fab:menu_colorPressed="@color/colorAccent"
         fab:menu_colorRipple="#99FFFFFF"
-        fab:menu_fab_label="your_label_here"
+        fab:menu_fab_label=""
         fab:menu_fab_size="normal"
         fab:menu_icon="@drawable/fab_add"
         fab:menu_labels_colorNormal="#333333"
@@ -172,7 +172,7 @@
             android:onClick="addReceita"
             android:src="@drawable/ic_add_branco"
             app:fab_colorNormal="@color/colorPrimaryReceita"
-            fab:fab_label="Receita"
+            fab:fab_label="Ganho"
             fab:fab_size="mini" />
 
     </com.github.clans.fab.FloatingActionMenu>
