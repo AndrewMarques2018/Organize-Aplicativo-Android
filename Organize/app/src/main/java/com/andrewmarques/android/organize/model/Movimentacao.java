@@ -34,6 +34,10 @@ public class Movimentacao implements Serializable {
 
     }
 
+    public String getDia (){
+        return DateCustom.dia(data);
+    }
+
     public String getKey() {
         return key;
     }

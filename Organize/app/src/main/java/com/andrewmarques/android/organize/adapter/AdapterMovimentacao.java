@@ -35,6 +35,7 @@ public class AdapterMovimentacao extends RecyclerView.Adapter<AdapterMovimentaca
 
         holder.titulo.setText(movimentacao.getDescricao());
         holder.categoria.setText(movimentacao.getCategoria());
+        holder.dia.setText(movimentacao.getDia());
 
         String campoValor = new DecimalFormat( "0.00" ).format(movimentacao.getValor()).replace(',', '.');
         if (movimentacao.getTipo() == "d" || movimentacao.getTipo().equals("d")) {
@@ -55,7 +56,7 @@ public class AdapterMovimentacao extends RecyclerView.Adapter<AdapterMovimentaca
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView titulo, valor, categoria;
+        TextView titulo, valor, categoria, dia;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -63,6 +64,7 @@ public class AdapterMovimentacao extends RecyclerView.Adapter<AdapterMovimentaca
             titulo = itemView.findViewById(R.id.textAdapterDescricao);
             categoria = itemView.findViewById(R.id.textAdapterCategoria);
             valor = itemView.findViewById(R.id.textAdapterValor);
+            dia = itemView.findViewById(R.id.textAdapterDia);
         }
 
     }
