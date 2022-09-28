@@ -24,14 +24,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.navigation.ui.AppBarConfiguration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -63,6 +61,9 @@ public class PrincipalActivity extends AppCompatActivity {
     private ValueEventListener valueEventListenerMovimentacoes;
     private String mesAnoSelecionado;
 
+    // implementacion v2.0.0 disign
+    private TextView txtValorSaldoMensal;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,9 +73,10 @@ public class PrincipalActivity extends AppCompatActivity {
         setSupportActionBar(binding.toolbar);
 
         txtSaudacao = findViewById(R.id.txtSaudacao);
-        txtSaldo = findViewById(R.id.txtSaldo);
+        txtSaldo = findViewById(R.id.txtSaldoGeral);
         calendarView = findViewById(R.id.calendarView);
         recyclerView = findViewById(R.id.recycleMovimentos);
+        txtValorSaldoMensal = findViewById(R.id.txtValorSaldoMensal);
 
         configuracaoCalendarView();
         swipe();
@@ -198,6 +200,8 @@ public class PrincipalActivity extends AppCompatActivity {
                     movimentacoes.add(movimentacao);
                 }
 
+                configurarSaldoMensal();
+
                 adapterMovimentacao.notifyDataSetChanged();
             }
 
@@ -206,6 +210,37 @@ public class PrincipalActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public void configurarSaldoMensal () {
+
+        Double valorTotal = 0.00;
+        Double valorDespesas = 0.00;
+        Double valorReceitas = 0.00;
+
+        for (Movimentacao m: movimentacoes){
+
+            if (m.getTipo().equals("d")){
+                valorDespesas += m.getValor();
+            }else
+            if (m.getTipo().equals("r")){
+                valorReceitas += m.getValor();
+            }
+
+        }
+
+        valorTotal = valorReceitas - valorDespesas;
+
+        if(valorTotal < 0.00){
+            txtValorSaldoMensal.setTextColor(getResources().getColor(R.color.colorRedDark));
+        }else
+        if(valorTotal > 0.00){
+            txtValorSaldoMensal.setTextColor(getResources().getColor(R.color.colorGreenDark));
+        }else{
+            txtValorSaldoMensal.setTextColor(getResources().getColor(R.color.colorBackGround));
+        }
+        DecimalFormat decimalFormat = new DecimalFormat( "0.00" );
+        txtValorSaldoMensal.setText("R$ " + decimalFormat.format(valorTotal));
     }
 
     public void recuperarResumo (){
@@ -224,7 +259,7 @@ public class PrincipalActivity extends AppCompatActivity {
                 resumoTotal = receitaTotal - despesaTotal;
 
                 DecimalFormat decimalFormat = new DecimalFormat( "0.00" );
-                txtSaldo.setText("R$" + decimalFormat.format(resumoTotal));
+                txtSaldo.setText("R$ " + decimalFormat.format(resumoTotal));
                 txtSaudacao.setText("Olá " + user.getNome());
             }
 

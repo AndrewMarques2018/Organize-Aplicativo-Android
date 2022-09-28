@@ -15,9 +15,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/Theme.Organize.AppBarOverlay"
+        app:elevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:elevation="0dp">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -32,7 +32,7 @@
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
+        android:layout_height="120dp"
         android:background="@color/colorPrimary"
         android:gravity="center"
         android:orientation="vertical"
@@ -50,15 +50,6 @@
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/txtSaldo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="R$ 0"
-            android:textAlignment="center"
-            android:textColor="@color/colorBackGround"
-            android:textSize="24sp" />
-
-        <TextView
             android:id="@+id/textView12"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -66,6 +57,37 @@
             android:textAlignment="center"
             android:textColor="@color/colorBackGround" />
 
+        <TextView
+            android:id="@+id/txtSaldoGeral"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="R$ 0"
+            android:textAlignment="center"
+            android:textColor="@color/colorBackGround"
+            android:textSize="24sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:background="@color/colorPrimary"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+        <TextView
+            android:id="@+id/txtValorSaldoMensal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="R$ 0"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@color/colorBackGround"
+            android:textSize="16sp"
+            android:textStyle="bold|italic" />
     </LinearLayout>
 
     <com.applandeo.materialcalendarview.CalendarView
@@ -76,7 +98,7 @@
         app:headerLabelColor="#000000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycleMovimentos"
@@ -85,7 +107,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+        app:layout_constraintTop_toBottomOf="@+id/calendarView" >
+
+    </androidx.recyclerview.widget.RecyclerView>
 
     <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/fabMenu"
