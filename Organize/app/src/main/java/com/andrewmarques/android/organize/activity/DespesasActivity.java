@@ -73,6 +73,7 @@ public class DespesasActivity extends AppCompatActivity {
         if (movimentacao != null){
             if(validarCamposDespesas()){
 
+                Double valorAtual = movimentacao.getValor();
                 Double valorRecuperado = Double.parseDouble(campoValor.getText().toString());
 
                 movimentacao.setValor( valorRecuperado );
@@ -80,7 +81,7 @@ public class DespesasActivity extends AppCompatActivity {
                 movimentacao.setDescricao(campoDescricao.getText().toString());
                 movimentacao.setData(campoData.getText().toString());
 
-                despesaAtualizada = despesaTotal + valorRecuperado;
+                despesaAtualizada = despesaTotal + valorRecuperado - valorAtual;
                 atualizarDespesas(despesaAtualizada);
 
                 movimentacao.atualizar(keyMovimentacaoRecuperada);

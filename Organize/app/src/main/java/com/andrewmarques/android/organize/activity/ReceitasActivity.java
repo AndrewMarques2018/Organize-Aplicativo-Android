@@ -73,6 +73,7 @@ public class ReceitasActivity extends AppCompatActivity {
         if (movimentacao != null){
             if(validarCamposReceitas()){
 
+                Double valorAtual = movimentacao.getValor();
                 Double valorRecuperado = Double.parseDouble(campoValor.getText().toString());
 
                 movimentacao.setValor( valorRecuperado );
@@ -80,7 +81,7 @@ public class ReceitasActivity extends AppCompatActivity {
                 movimentacao.setDescricao(campoDescricao.getText().toString());
                 movimentacao.setData(campoData.getText().toString());
 
-                receitaAtualizada = receitaTotal + valorRecuperado;
+                receitaAtualizada = receitaTotal + valorRecuperado - valorAtual;
                 atualizarReceitas(receitaAtualizada);
 
                 movimentacao.atualizar(keyMovimentacaoRecuperada);
