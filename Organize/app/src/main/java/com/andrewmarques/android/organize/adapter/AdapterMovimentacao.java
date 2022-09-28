@@ -8,6 +8,8 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.andrewmarques.android.organize.R;
 import com.andrewmarques.android.organize.model.Movimentacao;
+
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class AdapterMovimentacao extends RecyclerView.Adapter<AdapterMovimentacao.MyViewHolder> {
@@ -32,13 +34,16 @@ public class AdapterMovimentacao extends RecyclerView.Adapter<AdapterMovimentaca
         Movimentacao movimentacao = movimentacoes.get(position);
 
         holder.titulo.setText(movimentacao.getDescricao());
-        holder.valor.setText(String.valueOf(movimentacao.getValor()));
         holder.categoria.setText(movimentacao.getCategoria());
-        holder.valor.setTextColor(context.getResources().getColor(R.color.colorAccentReceita));
 
+        String campoValor = new DecimalFormat( "0.00" ).format(movimentacao.getValor()).replace(',', '.');
         if (movimentacao.getTipo() == "d" || movimentacao.getTipo().equals("d")) {
             holder.valor.setTextColor(context.getResources().getColor(R.color.colorAccentDespesa));
-            holder.valor.setText("-" + movimentacao.getValor());
+            holder.valor.setText("-" + campoValor);
+        }else
+        if (movimentacao.getTipo() == "r" || movimentacao.getTipo().equals("r")) {
+            holder.valor.setTextColor(context.getResources().getColor(R.color.colorAccentReceita));
+            holder.valor.setText(campoValor);
         }
     }
 
@@ -56,8 +61,8 @@ public class AdapterMovimentacao extends RecyclerView.Adapter<AdapterMovimentaca
             super(itemView);
 
             titulo = itemView.findViewById(R.id.textAdapterDescricao);
-            valor = itemView.findViewById(R.id.textAdapterValor);
             categoria = itemView.findViewById(R.id.textAdapterCategoria);
+            valor = itemView.findViewById(R.id.textAdapterValor);
         }
 
     }

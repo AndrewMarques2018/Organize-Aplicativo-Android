@@ -82,10 +82,10 @@
             android:id="@+id/txtValorSaldoMensal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="R$ 0"
+            android:text="R$ 500,00"
             android:textAlignment="center"
             android:textAllCaps="false"
-            android:textColor="@color/colorBackGround"
+            android:textColor="@color/colorGreenDark"
             android:textSize="16sp"
             android:textStyle="bold|italic" />
     </LinearLayout>

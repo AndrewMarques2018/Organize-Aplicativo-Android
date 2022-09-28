@@ -21,6 +21,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DecimalFormat;
+
 public class ReceitasActivity extends AppCompatActivity {
 
     private TextInputEditText campoData, campoDescricao, campoCategoria;
@@ -43,7 +45,25 @@ public class ReceitasActivity extends AppCompatActivity {
 
         // preencher data padrão, data atual
         campoData.setText(DateCustom.dataAtual());
+
+        recuperarMovimentacao();
         recuperarReceitaTotal();
+    }
+
+    public void recuperarMovimentacao (){
+        try {
+            movimentacao = (Movimentacao) getIntent().getSerializableExtra("movimentacaoSelecionada");
+            if (movimentacao != null){
+                campoData.setText(movimentacao.getData());
+                campoCategoria.setText(movimentacao.getCategoria());
+                campoDescricao.setText(movimentacao.getDescricao());
+
+                campoValor.setText(new DecimalFormat( "0.00" ).format(movimentacao.getValor()).replace(',', '.'));
+            }
+
+        }catch (Exception ignored){
+            // nao é uma edição!
+        }
     }
 
     public void salvarReceita(View view){

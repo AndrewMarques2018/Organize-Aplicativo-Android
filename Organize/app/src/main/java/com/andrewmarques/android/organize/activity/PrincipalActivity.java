@@ -10,6 +10,7 @@ import com.andrewmarques.android.organize.config.ConfigFirebase;
 import com.andrewmarques.android.organize.databinding.ActivityPrincipalBinding;
 import com.andrewmarques.android.organize.helper.Base64Custom;
 import com.andrewmarques.android.organize.helper.DateCustom;
+import com.andrewmarques.android.organize.helper.RecyclerItemClickListener;
 import com.andrewmarques.android.organize.model.Movimentacao;
 import com.andrewmarques.android.organize.model.User;
 import com.applandeo.materialcalendarview.CalendarView;
@@ -27,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +40,12 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+    Criado por: Andrew Marques Silva
+    Github: https://github.com/AndrewMarques2018
+    Linkedin: https://www.linkedin.com/in/andrewmarques2018
+    Instagram: https://www.instagram.com/andrewmarquessilva
+ */
 
 public class PrincipalActivity extends AppCompatActivity {
 
@@ -52,6 +60,7 @@ public class PrincipalActivity extends AppCompatActivity {
     private Double despesaTotal = 0.00;
     private Double receitaTotal = 0.00;
     private Double resumoTotal = 0.00;
+    private TextView txtValorSaldoMensal;
 
     private RecyclerView recyclerView;
     private AdapterMovimentacao adapterMovimentacao;
@@ -60,9 +69,6 @@ public class PrincipalActivity extends AppCompatActivity {
     private DatabaseReference movimentacaoRef;
     private ValueEventListener valueEventListenerMovimentacoes;
     private String mesAnoSelecionado;
-
-    // implementacion v2.0.0 disign
-    private TextView txtValorSaldoMensal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,11 +81,13 @@ public class PrincipalActivity extends AppCompatActivity {
         txtSaudacao = findViewById(R.id.txtSaudacao);
         txtSaldo = findViewById(R.id.txtSaldoGeral);
         calendarView = findViewById(R.id.calendarView);
-        recyclerView = findViewById(R.id.recycleMovimentos);
         txtValorSaldoMensal = findViewById(R.id.txtValorSaldoMensal);
+        recyclerView = findViewById(R.id.recycleMovimentos);
+
+        addOnItemClickListener();
+        swipe();
 
         configuracaoCalendarView();
-        swipe();
 
         adapterMovimentacao = new AdapterMovimentacao(movimentacoes, this);
 
@@ -87,6 +95,7 @@ public class PrincipalActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapterMovimentacao);
+
     }
 
     @Override
@@ -119,6 +128,50 @@ public class PrincipalActivity extends AppCompatActivity {
         };
 
         new ItemTouchHelper(itemTouch).attachToRecyclerView(recyclerView);
+    }
+
+    public void addOnItemClickListener () {
+
+        recyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(
+                        getApplicationContext(),
+                        recyclerView,
+                        new RecyclerItemClickListener.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(View view, int position) {
+                                try {
+                                    movimentacao = movimentacoes.get(position);
+                                    if (movimentacao.getTipo().equals("r")){
+                                        Intent intent = new Intent(PrincipalActivity.this, ReceitasActivity.class);
+                                        intent.putExtra("movimentacaoSelecionada", movimentacao);
+                                        startActivity(intent);
+                                    }else
+                                    if (movimentacao.getTipo().equals("d")) {
+                                        Intent intent = new Intent(PrincipalActivity.this, DespesasActivity.class);
+                                        intent.putExtra("movimentacaoSelecionada", movimentacao);
+                                        startActivity(intent);
+                                    }
+
+                                }catch (Exception e){
+                                    Toast.makeText(getApplicationContext(),
+                                            "Erro ao recuperar movimentação",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onLongItemClick(View view, int position) {
+
+                            }
+
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                            }
+                        }
+                )
+        );
+
     }
 
     public void excluirMovimentacao ( RecyclerView.ViewHolder viewHolder) {

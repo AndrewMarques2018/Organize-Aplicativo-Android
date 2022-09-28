@@ -6,7 +6,9 @@ import com.andrewmarques.android.organize.helper.DateCustom;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 
-public class Movimentacao {
+import java.io.Serializable;
+
+public class Movimentacao implements Serializable {
 
     private String data;
     private String categoria;
