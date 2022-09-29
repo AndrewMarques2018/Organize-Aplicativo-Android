@@ -21,7 +21,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.util.Date;
+import java.util.IllegalFormatException;
 
 public class DespesasActivity extends AppCompatActivity {
 
@@ -73,6 +82,8 @@ public class DespesasActivity extends AppCompatActivity {
         if (movimentacao != null){
             if(validarCamposDespesas()){
 
+                movimentacao.deletar(keyMovimentacaoRecuperada);
+
                 Double valorAtual = movimentacao.getValor();
                 Double valorRecuperado = Double.parseDouble(campoValor.getText().toString());
 
@@ -108,40 +119,66 @@ public class DespesasActivity extends AppCompatActivity {
 
     }
 
-    public boolean validarCamposDespesas (){
+    public boolean validarCamposDespesas () {
 
         String txtValor = campoValor.getText().toString();
         String txtCategoria = campoCategoria.getText().toString();
         String txtDescricao = campoDescricao.getText().toString();
         String txtData = campoData.getText().toString();
 
-        // validando se os campos estão vazios
-        {
-            if (txtValor.isEmpty()) {
-                Toast.makeText(DespesasActivity.this,
-                        "Valor não foi preenchido!",
-                        Toast.LENGTH_SHORT).show();
-                return false;
-            }else
+        // validando Valor digitado
+        try {
+            Double valorIsDouble = Double.parseDouble(txtValor);
+        } catch (NullPointerException e) {
+            Toast.makeText(DespesasActivity.this,
+                    "Valor não foi preenchido!",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        } catch (NumberFormatException e) {
+            Toast.makeText(DespesasActivity.this,
+                    "Formato incorreto: ex: 150.00",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        } catch (Exception e) {
+            Toast.makeText(DespesasActivity.this,
+                    "Erro ao resgatar numero: " + e.getMessage(),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
 
-            if (txtData.isEmpty()) {
-                Toast.makeText(DespesasActivity.this,
-                        "Data não foi preenchido!",
-                        Toast.LENGTH_SHORT).show();
-                return false;
-            }else
+        // validando data digitada
+        String dateFormat = "dd/MM/uuuu";
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter
+                .ofPattern(dateFormat)
+                .withResolverStyle(ResolverStyle.STRICT);
+        try {
+            LocalDate date = LocalDate.parse(txtData, dateTimeFormatter);
+        } catch (DateTimeParseException e) {
+            Toast.makeText(DespesasActivity.this,
+                    "Data invalida",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }catch (Exception e) {
+            Toast.makeText(DespesasActivity.this,
+                    "Data: " + e.getMessage(),
+                    Toast.LENGTH_SHORT).show();
+            throw e;
+        }
 
-            if (txtCategoria.isEmpty()) {
-                Toast.makeText(DespesasActivity.this,
-                        "Categoria não foi preenchido!",
-                        Toast.LENGTH_SHORT).show();
-                return false;
-            }else
-
-            if (txtDescricao.isEmpty()) {
-                campoDescricao.setText("Sem Descrição");
-                return false;
+        // validando categoria
+        try {
+            if (txtCategoria.isEmpty()){
+                throw new NullPointerException();
             }
+        }catch (NullPointerException e){
+            Toast.makeText(DespesasActivity.this,
+                    "Categoria não foi preenchido!",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (txtDescricao.isEmpty()) {
+            campoDescricao.setText("Sem Descrição");
         }
 
         return true;

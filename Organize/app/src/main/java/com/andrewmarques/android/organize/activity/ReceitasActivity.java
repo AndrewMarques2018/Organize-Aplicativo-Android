@@ -22,6 +22,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 
 public class ReceitasActivity extends AppCompatActivity {
 
@@ -73,6 +77,8 @@ public class ReceitasActivity extends AppCompatActivity {
         if (movimentacao != null){
             if(validarCamposReceitas()){
 
+                movimentacao.deletar(keyMovimentacaoRecuperada);
+
                 Double valorAtual = movimentacao.getValor();
                 Double valorRecuperado = Double.parseDouble(campoValor.getText().toString());
 
@@ -115,36 +121,60 @@ public class ReceitasActivity extends AppCompatActivity {
         String txtDescricao = campoDescricao.getText().toString();
         String txtData = campoData.getText().toString();
 
-        // validando se os campos estão vazios
-        {
-            if (txtValor.isEmpty()) {
-                Toast.makeText(ReceitasActivity.this,
-                        "Valor não foi preenchido!",
-                        Toast.LENGTH_SHORT).show();
-                return false;
-            }else
-
-            if (txtData.isEmpty()) {
-                Toast.makeText(ReceitasActivity.this,
-                        "Data não foi preenchido!",
-                        Toast.LENGTH_SHORT).show();
-                return false;
-            }else
-
-            if (txtCategoria.isEmpty()) {
-                Toast.makeText(ReceitasActivity.this,
-                        "Categoria não foi preenchido!",
-                        Toast.LENGTH_SHORT).show();
-                return false;
-            }else
-
-            if (txtDescricao.isEmpty()) {
-                campoDescricao.setText("Sem Descrição");
-                return false;
-            }
+        // validando Valor digitado
+        try {
+            Double valorIsDouble = Double.parseDouble(txtValor);
+        } catch (NullPointerException e) {
+            Toast.makeText(ReceitasActivity.this,
+                    "Valor não foi preenchido!",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        } catch (NumberFormatException e) {
+            Toast.makeText(ReceitasActivity.this,
+                    "Formato incorreto: ex: 150.00",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        } catch (Exception e) {
+            Toast.makeText(ReceitasActivity.this,
+                    "Erro ao resgatar numero: " + e.getMessage(),
+                    Toast.LENGTH_SHORT).show();
+            return false;
         }
 
+        // validando data digitada
+        String dateFormat = "dd/MM/uuuu";
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter
+                .ofPattern(dateFormat)
+                .withResolverStyle(ResolverStyle.STRICT);
+        try {
+            LocalDate date = LocalDate.parse(txtData, dateTimeFormatter);
+        } catch (DateTimeParseException e) {
+            Toast.makeText(ReceitasActivity.this,
+                    "Data invalida",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }catch (Exception e) {
+            Toast.makeText(ReceitasActivity.this,
+                    "Data: " + e.getMessage(),
+                    Toast.LENGTH_SHORT).show();
+            throw e;
+        }
 
+        // validando categoria
+        try {
+            if (txtCategoria.isEmpty()){
+                throw new NullPointerException();
+            }
+        }catch (NullPointerException e){
+            Toast.makeText(ReceitasActivity.this,
+                    "Categoria não foi preenchido!",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (txtDescricao.isEmpty()) {
+            campoDescricao.setText("Sem Descrição");
+        }
 
         return true;
     }

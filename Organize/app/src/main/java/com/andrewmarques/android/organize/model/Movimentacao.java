@@ -20,6 +20,20 @@ public class Movimentacao implements Serializable, Comparable<Movimentacao>{
     public Movimentacao() {
     }
 
+    public void deletar (String key){
+
+        FirebaseAuth auth = ConfigFirebase.getAuth();
+        String idUser = Base64Custom.codificarBase64( auth.getCurrentUser().getEmail() );
+
+        DatabaseReference firebase = ConfigFirebase.getDatabaseReference();
+        firebase.child("movimentacao")
+                .child(idUser)
+                .child(DateCustom.mesAno(data))
+                .child(key)
+                .removeValue();
+
+    }
+
     public void atualizar (String key){
 
         FirebaseAuth auth = ConfigFirebase.getAuth();
