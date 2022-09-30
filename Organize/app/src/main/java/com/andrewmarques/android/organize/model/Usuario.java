@@ -13,10 +13,10 @@ import com.google.firebase.database.Exclude;
 
 public class Usuario {
 
+    private String idUser;
     private String nome;
     private String email;
     private String senha;
-    private String idUser;
     private Double receitaTotal = 0.00;
     private Double despesaTotal = 0.00;
 

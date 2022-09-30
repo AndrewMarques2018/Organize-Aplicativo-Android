@@ -195,7 +195,7 @@ public class PrincipalActivity extends AppCompatActivity {
                 String idUser = Base64Custom.codificarBase64(emailUser);
                 movimentacaoRef = firebase.child("movimentacao").child(idUser).child(mesAnoSelecionado);
 
-                movimentacaoRef.child(movimentacao.getKey()).removeValue();
+                movimentacaoRef.child(movimentacao.getIdMovimentacao()).removeValue();
                 adapterMovimentacao.notifyItemRemoved(position);
 
                 atualizarSaldo();
@@ -252,7 +252,7 @@ public class PrincipalActivity extends AppCompatActivity {
 
                 for (DataSnapshot dados: snapshot.getChildren()){
                     Movimentacao movimentacao = dados.getValue(Movimentacao.class);
-                    movimentacao.setKey( dados.getKey() );
+                    movimentacao.setIdMovimentacao( dados.getKey() );
 
                     movimentacoes.add(movimentacao);
                 }

@@ -54,11 +54,40 @@ public class UsuarioDAO implements InterfaceUsuarioDAO {
 
     @Override
     public boolean atualizar(Usuario usuario) {
+
+        ContentValues cv = new ContentValues();
+        cv.put("nome" , usuario.getNome());
+        cv.put("email" , usuario.getEmail());
+        cv.put("senha" , usuario.getSenha());
+        cv.put("receitaTotal" , usuario.getReceitaTotal());
+        cv.put("despesaTotal" , usuario.getDespesaTotal());
+
+        String sqlQuery = "idUsuario = ?";
+        String[] args = {usuario.getIdUser()};
+
+        try {
+            escreve.update(DBhelper.NOME_TABELA_USUARIOS, cv, sqlQuery, args);
+        }catch (Exception e){
+            Log.e( "INFO", "Erro ao atualizar usuario: " + e.getMessage());
+            return false;
+        }
+
         return true;
     }
 
     @Override
     public boolean deletar(Usuario usuario) {
+
+        String sqlQuery = "idUsuario = ?";
+        String[] args = {usuario.getIdUser()};
+
+        try {
+            escreve.delete(DBhelper.NOME_TABELA_USUARIOS, sqlQuery, args);
+        }catch (Exception e){
+            Log.e( "INFO", "Erro ao deletar usuario: " + e.getMessage());
+            return false;
+        }
+
         return true;
     }
 

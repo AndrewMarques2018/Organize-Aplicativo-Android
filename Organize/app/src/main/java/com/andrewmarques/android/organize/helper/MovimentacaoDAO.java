@@ -35,7 +35,7 @@ public class MovimentacaoDAO implements InterfaceMovimentacaoDAO {
     public boolean salvar(Movimentacao movimentacao) {
 
         ContentValues cv = new ContentValues();
-        cv.put("idMovimentacao" , movimentacao.getKey());
+        cv.put("idMovimentacao" , movimentacao.getIdMovimentacao());
         cv.put("fk_idUsuario" , movimentacao.getFk_usuario());
         cv.put("mesAno" , DateCustom.getMesAno(movimentacao.getData()));
         cv.put("tipo" , movimentacao.getTipo());
@@ -56,11 +56,42 @@ public class MovimentacaoDAO implements InterfaceMovimentacaoDAO {
 
     @Override
     public boolean atualizar(Movimentacao movimentacao) {
+
+        ContentValues cv = new ContentValues();
+        cv.put("fk_idUsuario" , movimentacao.getFk_usuario());
+        cv.put("mesAno" , DateCustom.getMesAno(movimentacao.getData()));
+        cv.put("tipo" , movimentacao.getTipo());
+        cv.put("dataMovimentacao" , movimentacao.getData());
+        cv.put("valor" , movimentacao.getValor());
+        cv.put("categoria" , movimentacao.getCategoria());
+        cv.put("descricao" , movimentacao.getDescricao());
+
+        String sqlQuery = "idUsuario = ?";
+        String[] args = {movimentacao.getIdMovimentacao()};
+
+        try {
+            escreve.update(DBhelper.NOME_TABELA_USUARIOS, cv, sqlQuery, args);
+        }catch (Exception e){
+            Log.e( "INFO", "Erro ao salvar usuario: " + e.getMessage());
+            return false;
+        }
+
         return true;
     }
 
     @Override
     public boolean deletar(Movimentacao movimentacao) {
+
+        String sqlQuery = "idUsuario = ?";
+        String[] args = {movimentacao.getIdMovimentacao()};
+
+        try {
+            escreve.delete(DBhelper.NOME_TABELA_USUARIOS, sqlQuery, args);
+        }catch (Exception e){
+            Log.e( "INFO", "Erro ao salvar usuario: " + e.getMessage());
+            return false;
+        }
+
         return true;
     }
 
@@ -79,7 +110,7 @@ public class MovimentacaoDAO implements InterfaceMovimentacaoDAO {
             Movimentacao movimentacao = new Movimentacao();
 
             try {
-                movimentacao.setKey( c.getString( c.getColumnIndexOrThrow("idMovimentacao") ) );
+                movimentacao.setIdMovimentacao( c.getString( c.getColumnIndexOrThrow("idMovimentacao") ) );
                 movimentacao.setFk_usuario( c.getString( c.getColumnIndexOrThrow("fk_idUsuario") ) );
                 movimentacao.setData( c.getString( c.getColumnIndexOrThrow("idMovimentacao") ) );
                 movimentacao.setTipo( c.getString( c.getColumnIndexOrThrow("idMovimentacao") ) );

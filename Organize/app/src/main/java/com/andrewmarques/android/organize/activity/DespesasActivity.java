@@ -71,7 +71,7 @@ public class DespesasActivity extends AppCompatActivity {
                 campoDescricao.setText(movimentacao.getDescricao());
 
                 campoValor.setText(new DecimalFormat( "0.00" ).format(movimentacao.getValor()).replace(',', '.'));
-                keyMovimentacaoRecuperada = movimentacao.getKey();
+                keyMovimentacaoRecuperada = movimentacao.getIdMovimentacao();
             }
 
         }catch (Exception ignored){

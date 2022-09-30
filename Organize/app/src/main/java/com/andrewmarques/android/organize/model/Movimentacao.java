@@ -17,12 +17,12 @@ import java.io.Serializable;
 
 public class Movimentacao implements Serializable, Comparable<Movimentacao>{
 
+    private String idMovimentacao;
     private String data;
     private String categoria;
     private String descricao;
     private String tipo;
     private Double valor;
-    private String key;
     private String fk_usuario;
 
     public Movimentacao() {
@@ -78,12 +78,12 @@ public class Movimentacao implements Serializable, Comparable<Movimentacao>{
         this.fk_usuario = fk_usuario;
     }
 
-    public String getKey() {
-        return key;
+    public String getIdMovimentacao() {
+        return idMovimentacao;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setIdMovimentacao(String idMovimentacao) {
+        this.idMovimentacao = idMovimentacao;
     }
 
     public String getData() {
@@ -131,7 +131,7 @@ public class Movimentacao implements Serializable, Comparable<Movimentacao>{
         return "Movimentacao{" +
                 "data='" + data + '\'' +
                 ", valor=" + valor +
-                ", key='" + key + '\'' +
+                ", key='" + idMovimentacao + '\'' +
                 '}';
     }
 
