@@ -12,7 +12,7 @@ import android.widget.Toast;
 import com.andrewmarques.android.organize.R;
 import com.andrewmarques.android.organize.config.ConfigFirebase;
 import com.andrewmarques.android.organize.helper.Base64Custom;
-import com.andrewmarques.android.organize.model.User;
+import com.andrewmarques.android.organize.model.Usuario;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -21,12 +21,19 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 
+/*
+    Criado por: Andrew Marques Silva
+    Github: https://github.com/AndrewMarques2018
+    Linkedin: https://www.linkedin.com/in/andrewmarques2018
+    Instagram: https://www.instagram.com/andrewmarquessilva
+ */
+
 public class CadastroActivity extends AppCompatActivity {
 
     private EditText campoNome, campoEmail, campoSenha;
     private Button btCadastrar;
     private FirebaseAuth auth;
-    private User user;
+    private Usuario usuario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +54,7 @@ public class CadastroActivity extends AppCompatActivity {
                 email = campoEmail.getText().toString();
 
                 if(!nome.isEmpty() && !senha.isEmpty() && !email.isEmpty()){
-                    user = new User(nome, email, senha);
+                    usuario = new Usuario(nome, email, senha);
                     cadastrarUser();
 
                 }else {
@@ -62,15 +69,15 @@ public class CadastroActivity extends AppCompatActivity {
     public void cadastrarUser (){
         auth = ConfigFirebase.getAuth();
 
-        auth.createUserWithEmailAndPassword(user.getEmail(), user.getSenha())
+        auth.createUserWithEmailAndPassword(usuario.getEmail(), usuario.getSenha())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
 
-                    String idUser = Base64Custom.codificarBase64(user.getEmail());
-                    user.setIdUser(idUser);
-                    user.salvar();
+                    String idUser = Base64Custom.codificarBase64(usuario.getEmail());
+                    usuario.setIdUser(idUser);
+                    usuario.salvar();
                     finish();
 
                 }else{

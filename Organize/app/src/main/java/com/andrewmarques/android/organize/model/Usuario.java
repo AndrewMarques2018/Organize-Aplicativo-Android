@@ -4,7 +4,14 @@ import com.andrewmarques.android.organize.config.ConfigFirebase;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 
-public class User {
+/*
+    Criado por: Andrew Marques Silva
+    Github: https://github.com/AndrewMarques2018
+    Linkedin: https://www.linkedin.com/in/andrewmarques2018
+    Instagram: https://www.instagram.com/andrewmarquessilva
+ */
+
+public class Usuario {
 
     private String nome;
     private String email;
@@ -13,13 +20,13 @@ public class User {
     private Double receitaTotal = 0.00;
     private Double despesaTotal = 0.00;
 
-    public User(String nome, String email, String senha) {
+    public Usuario(String nome, String email, String senha) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
     }
 
-    public User() {
+    public Usuario() {
     }
 
     public void salvar (){

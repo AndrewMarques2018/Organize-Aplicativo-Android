@@ -9,10 +9,11 @@ import com.andrewmarques.android.organize.adapter.AdapterMovimentacao;
 import com.andrewmarques.android.organize.config.ConfigFirebase;
 import com.andrewmarques.android.organize.databinding.ActivityPrincipalBinding;
 import com.andrewmarques.android.organize.helper.Base64Custom;
+import com.andrewmarques.android.organize.helper.DBhelper;
 import com.andrewmarques.android.organize.helper.DateCustom;
 import com.andrewmarques.android.organize.helper.RecyclerItemClickListener;
 import com.andrewmarques.android.organize.model.Movimentacao;
-import com.andrewmarques.android.organize.model.User;
+import com.andrewmarques.android.organize.model.Usuario;
 import com.applandeo.materialcalendarview.CalendarView;
 import com.applandeo.materialcalendarview.listeners.OnCalendarPageChangeListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -74,6 +75,8 @@ public class PrincipalActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        DBhelper dBhelper =  new DBhelper(getApplicationContext());
 
         binding = ActivityPrincipalBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -307,15 +310,15 @@ public class PrincipalActivity extends AppCompatActivity {
         valueEventListenerUser = userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                User user = snapshot.getValue(User.class);
+                Usuario usuario = snapshot.getValue(Usuario.class);
 
-                despesaTotal = user.getDespesaTotal();
-                receitaTotal = user.getReceitaTotal();
+                despesaTotal = usuario.getDespesaTotal();
+                receitaTotal = usuario.getReceitaTotal();
                 resumoTotal = receitaTotal - despesaTotal;
 
                 DecimalFormat decimalFormat = new DecimalFormat( "0.00" );
                 txtSaldo.setText("R$ " + decimalFormat.format(resumoTotal));
-                txtSaudacao.setText("Olá " + user.getNome());
+                txtSaudacao.setText("Olá " + usuario.getNome());
             }
 
             @Override

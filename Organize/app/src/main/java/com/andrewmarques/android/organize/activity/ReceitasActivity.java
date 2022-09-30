@@ -13,7 +13,7 @@ import com.andrewmarques.android.organize.config.ConfigFirebase;
 import com.andrewmarques.android.organize.helper.Base64Custom;
 import com.andrewmarques.android.organize.helper.DateCustom;
 import com.andrewmarques.android.organize.model.Movimentacao;
-import com.andrewmarques.android.organize.model.User;
+import com.andrewmarques.android.organize.model.Usuario;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +26,13 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+
+/*
+    Criado por: Andrew Marques Silva
+    Github: https://github.com/AndrewMarques2018
+    Linkedin: https://www.linkedin.com/in/andrewmarques2018
+    Instagram: https://www.instagram.com/andrewmarquessilva
+ */
 
 public class ReceitasActivity extends AppCompatActivity {
 
@@ -188,9 +195,9 @@ public class ReceitasActivity extends AppCompatActivity {
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                User user = snapshot.getValue(User.class);
+                Usuario usuario = snapshot.getValue(Usuario.class);
 
-                receitaTotal = user.getReceitaTotal();
+                receitaTotal = usuario.getReceitaTotal();
             }
 
             @Override

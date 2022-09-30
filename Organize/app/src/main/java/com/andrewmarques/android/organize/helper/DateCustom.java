@@ -2,6 +2,13 @@ package com.andrewmarques.android.organize.helper;
 
 import java.text.SimpleDateFormat;
 
+/*
+    Criado por: Andrew Marques Silva
+    Github: https://github.com/AndrewMarques2018
+    Linkedin: https://www.linkedin.com/in/andrewmarques2018
+    Instagram: https://www.instagram.com/andrewmarquessilva
+ */
+
 public class DateCustom {
 
     public static String dataAtual (){
@@ -11,7 +18,7 @@ public class DateCustom {
         return dataString;
     }
 
-    public static String dia (String data){
+    public static String getDia(String data){
 
         String retornoData[] = data.split("/");
         String dia = retornoData[0];
@@ -21,7 +28,7 @@ public class DateCustom {
         return dia;
     }
 
-    public static String mesAno (String data){
+    public static String getMesAno(String data){
 
         String retornoData[] = data.split("/");
         String dia = retornoData[0];
@@ -29,6 +36,17 @@ public class DateCustom {
         String ano = retornoData[2];
 
         return mes + ano;
+    }
+
+    public static String getAnoMesDia (String data) {
+
+        String retornoData[] = data.split("/");
+        String dia = retornoData[0];
+        String mes = retornoData[1];
+        String ano = retornoData[2];
+
+        return ano + mes + dia;
+
     }
 
     public static String parseMillisOfMesAno (Long dataMillis){

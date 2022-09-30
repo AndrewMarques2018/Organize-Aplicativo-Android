@@ -10,6 +10,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.heinrichreimersoftware.materialintro.app.IntroActivity;
 import com.heinrichreimersoftware.materialintro.slide.FragmentSlide;
 
+/*
+    Criado por: Andrew Marques Silva
+    Github: https://github.com/AndrewMarques2018
+    Linkedin: https://www.linkedin.com/in/andrewmarques2018
+    Instagram: https://www.instagram.com/andrewmarquessilva
+ */
+
 public class MainActivity extends IntroActivity {
 
     private FirebaseAuth auth;

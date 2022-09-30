@@ -7,10 +7,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.andrewmarques.android.organize.R;
+import com.andrewmarques.android.organize.helper.DateCustom;
 import com.andrewmarques.android.organize.model.Movimentacao;
 
 import java.text.DecimalFormat;
 import java.util.List;
+
+/*
+    Criado por: Andrew Marques Silva
+    Github: https://github.com/AndrewMarques2018
+    Linkedin: https://www.linkedin.com/in/andrewmarques2018
+    Instagram: https://www.instagram.com/andrewmarquessilva
+ */
 
 public class AdapterMovimentacao extends RecyclerView.Adapter<AdapterMovimentacao.MyViewHolder> {
 
@@ -35,7 +43,7 @@ public class AdapterMovimentacao extends RecyclerView.Adapter<AdapterMovimentaca
 
         holder.titulo.setText(movimentacao.getDescricao());
         holder.categoria.setText(movimentacao.getCategoria());
-        holder.dia.setText(movimentacao.getDia());
+        holder.dia.setText(DateCustom.getDia(movimentacao.getData()));
 
         String campoValor = new DecimalFormat( "0.00" ).format(movimentacao.getValor()).replace(',', '.');
         if (movimentacao.getTipo() == "d" || movimentacao.getTipo().equals("d")) {

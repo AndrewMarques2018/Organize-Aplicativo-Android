@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.andrewmarques.android.organize.R;
 import com.andrewmarques.android.organize.config.ConfigFirebase;
-import com.andrewmarques.android.organize.model.User;
+import com.andrewmarques.android.organize.model.Usuario;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -20,12 +20,19 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 
+/*
+    Criado por: Andrew Marques Silva
+    Github: https://github.com/AndrewMarques2018
+    Linkedin: https://www.linkedin.com/in/andrewmarques2018
+    Instagram: https://www.instagram.com/andrewmarquessilva
+ */
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText campoEmail, campoSenha;
     private Button btLogin;
     private FirebaseAuth auth;
-    private User user;
+    private Usuario usuario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +51,9 @@ public class LoginActivity extends AppCompatActivity {
                 email = campoEmail.getText().toString();
 
                 if(!senha.isEmpty() && !email.isEmpty()){
-                    user = new User();
-                    user.setEmail(email);
-                    user.setSenha(senha);
+                    usuario = new Usuario();
+                    usuario.setEmail(email);
+                    usuario.setSenha(senha);
                     loginUser();
 
                 }else {
@@ -62,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
 
         auth = ConfigFirebase.getAuth();
 
-        auth.signInWithEmailAndPassword(user.getEmail(), user.getSenha())
+        auth.signInWithEmailAndPassword(usuario.getEmail(), usuario.getSenha())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {

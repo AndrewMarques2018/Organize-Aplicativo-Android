@@ -13,7 +13,7 @@ import com.andrewmarques.android.organize.config.ConfigFirebase;
 import com.andrewmarques.android.organize.helper.Base64Custom;
 import com.andrewmarques.android.organize.helper.DateCustom;
 import com.andrewmarques.android.organize.model.Movimentacao;
-import com.andrewmarques.android.organize.model.User;
+import com.andrewmarques.android.organize.model.Usuario;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -21,16 +21,18 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
-import java.util.Date;
-import java.util.IllegalFormatException;
+
+/*
+    Criado por: Andrew Marques Silva
+    Github: https://github.com/AndrewMarques2018
+    Linkedin: https://www.linkedin.com/in/andrewmarques2018
+    Instagram: https://www.instagram.com/andrewmarquessilva
+ */
 
 public class DespesasActivity extends AppCompatActivity {
 
@@ -193,9 +195,9 @@ public class DespesasActivity extends AppCompatActivity {
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                User user = snapshot.getValue(User.class);
+                Usuario usuario = snapshot.getValue(Usuario.class);
 
-                despesaTotal = user.getDespesaTotal();
+                despesaTotal = usuario.getDespesaTotal();
             }
 
             @Override
