@@ -38,14 +38,23 @@ public class DateCustom {
         return mes + ano;
     }
 
-    public static String getAnoMesDia (String data) {
+    public static String dateSQLParseData (String data) {
+        String retornoData[] = data.split("-");
+        String ano = retornoData[0];
+        String mes = retornoData[1];
+        String dia = retornoData[2];
+
+        return dia + "/" + mes + "/" + ano;
+    }
+
+    public static String getDateSQL (String data) {
 
         String retornoData[] = data.split("/");
         String dia = retornoData[0];
         String mes = retornoData[1];
         String ano = retornoData[2];
 
-        return ano + mes + dia;
+        return ano + "-" + mes + "-" + dia;
 
     }
 

@@ -1,6 +1,5 @@
 package com.andrewmarques.android.organize.activity;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -9,23 +8,20 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.andrewmarques.android.organize.R;
-import com.andrewmarques.android.organize.config.ConfigFirebase;
-import com.andrewmarques.android.organize.helper.Base64Custom;
 import com.andrewmarques.android.organize.helper.DateCustom;
+import com.andrewmarques.android.organize.helper.FirebaseHelper;
+import com.andrewmarques.android.organize.helper.MovimentacaoDAO;
+import com.andrewmarques.android.organize.helper.MySharedPreferencs;
 import com.andrewmarques.android.organize.model.Movimentacao;
 import com.andrewmarques.android.organize.model.Usuario;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.util.UUID;
 
 /*
     Criado por: Andrew Marques Silva
@@ -36,14 +32,14 @@ import java.time.format.ResolverStyle;
 
 public class ReceitasActivity extends AppCompatActivity {
 
+    private MySharedPreferencs mySharedPreferencs;
+    private MovimentacaoDAO movimentacaoDAO;
+    private Movimentacao movimentacao;
+
     private TextInputEditText campoData, campoDescricao, campoCategoria;
     private EditText campoValor;
-    private Movimentacao movimentacao;
-    private String keyMovimentacaoRecuperada;
-    private DatabaseReference firebase = ConfigFirebase.getDatabaseReference();
-    private FirebaseAuth auth = ConfigFirebase.getAuth();
-    private Double receitaTotal;
-    private Double receitaAtualizada;
+    private Float receitaTotal;
+    private Float receitaAtualizada;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +51,9 @@ public class ReceitasActivity extends AppCompatActivity {
         campoDescricao = findViewById(R.id.editReceitasDescricao);
         campoValor = findViewById(R.id.editReceitasValor);
 
+        mySharedPreferencs = new MySharedPreferencs(getApplicationContext());
+        movimentacaoDAO = new MovimentacaoDAO(getApplicationContext());
+
         // preencher data padrão, data atual
         campoData.setText(DateCustom.dataAtual());
 
@@ -63,6 +62,7 @@ public class ReceitasActivity extends AppCompatActivity {
     }
 
     public void recuperarMovimentacao (){
+
         try {
             movimentacao = (Movimentacao) getIntent().getSerializableExtra("movimentacaoSelecionada");
             if (movimentacao != null){
@@ -71,7 +71,6 @@ public class ReceitasActivity extends AppCompatActivity {
                 campoDescricao.setText(movimentacao.getDescricao());
 
                 campoValor.setText(new DecimalFormat( "0.00" ).format(movimentacao.getValor()).replace(',', '.'));
-                keyMovimentacaoRecuperada = movimentacao.getIdMovimentacao();
             }
 
         }catch (Exception ignored){
@@ -84,10 +83,10 @@ public class ReceitasActivity extends AppCompatActivity {
         if (movimentacao != null){
             if(validarCamposReceitas()){
 
-                movimentacao.deletar(keyMovimentacaoRecuperada);
+                movimentacaoDAO.deletar(movimentacao);
 
-                Double valorAtual = movimentacao.getValor();
-                Double valorRecuperado = Double.parseDouble(campoValor.getText().toString());
+                Float valorAtual = movimentacao.getValor();
+                Float valorRecuperado = Float.parseFloat(campoValor.getText().toString());
 
                 movimentacao.setValor( valorRecuperado );
                 movimentacao.setCategoria(campoCategoria.getText().toString());
@@ -97,15 +96,20 @@ public class ReceitasActivity extends AppCompatActivity {
                 receitaAtualizada = receitaTotal + valorRecuperado - valorAtual;
                 atualizarReceitas(receitaAtualizada);
 
-                movimentacao.atualizar(keyMovimentacaoRecuperada);
+                if (movimentacaoDAO.atualizar(movimentacao)){
+                    FirebaseHelper.salvarMovimentacao(movimentacao);
+                }
+
                 finish();
             }
         }else
         if(validarCamposReceitas()){
 
-            Double valorRecuperado = Double.parseDouble(campoValor.getText().toString());
+            Float valorRecuperado = Float.parseFloat(campoValor.getText().toString());
 
             movimentacao = new Movimentacao();
+            movimentacao.setIdMovimentacao(UUID.randomUUID().toString().replace("-",""));
+            movimentacao.setFk_usuario(mySharedPreferencs.getUsuarioAtual().getIdUser());
             movimentacao.setValor( valorRecuperado );
             movimentacao.setCategoria(campoCategoria.getText().toString());
             movimentacao.setDescricao(campoDescricao.getText().toString());
@@ -115,10 +119,12 @@ public class ReceitasActivity extends AppCompatActivity {
             receitaAtualizada = receitaTotal + valorRecuperado;
             atualizarReceitas(receitaAtualizada);
 
-            movimentacao.salvar();
+            if(movimentacaoDAO.salvar(movimentacao)){
+                FirebaseHelper.salvarMovimentacao(movimentacao);
+            }
+
             finish();
         }
-
     }
 
     public boolean validarCamposReceitas(){
@@ -188,31 +194,19 @@ public class ReceitasActivity extends AppCompatActivity {
 
     public void recuperarReceitaTotal(){
 
-        String emailUser = auth.getCurrentUser().getEmail();
-        String idUser = Base64Custom.codificarBase64(emailUser);
-        DatabaseReference userRef = firebase.child("usuarios").child(idUser);
-
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Usuario usuario = snapshot.getValue(Usuario.class);
-
-                receitaTotal = usuario.getReceitaTotal();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        Usuario usuario = mySharedPreferencs.getUsuarioAtual();
+        receitaTotal = usuario.getReceitaTotal();
     }
 
-    public void atualizarReceitas(Double despesa){
+    public void atualizarReceitas(Float receitaTotal){
 
-        String emailUser = auth.getCurrentUser().getEmail();
-        String idUser = Base64Custom.codificarBase64(emailUser);
-        DatabaseReference userRef = firebase.child("usuarios").child(idUser);
-        userRef.child("receitaTotal").setValue(despesa);
+        Usuario usuario = mySharedPreferencs.getUsuarioAtual();
+        usuario.setReceitaTotal(receitaTotal);
+
+        if (mySharedPreferencs.salvarUsuarioAtual(usuario)){
+            FirebaseHelper.atualizarUsuario(usuario);
+        }
+
     }
 
 }

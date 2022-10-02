@@ -5,8 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.andrewmarques.android.organize.R;
-import com.andrewmarques.android.organize.config.ConfigFirebase;
-import com.google.firebase.auth.FirebaseAuth;
+import com.andrewmarques.android.organize.helper.FirebaseHelper;
 import com.heinrichreimersoftware.materialintro.app.IntroActivity;
 import com.heinrichreimersoftware.materialintro.slide.FragmentSlide;
 
@@ -18,8 +17,6 @@ import com.heinrichreimersoftware.materialintro.slide.FragmentSlide;
  */
 
 public class MainActivity extends IntroActivity {
-
-    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +75,7 @@ public class MainActivity extends IntroActivity {
 
     public void verificarUsuarioLogado (){
 
-        auth = ConfigFirebase.getAuth();
-        if (auth.getCurrentUser() != null){
+        if (FirebaseHelper.isCurrentUser()){
             abrirTelaPrincipal();
         }
     }

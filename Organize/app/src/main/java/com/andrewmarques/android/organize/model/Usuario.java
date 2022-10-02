@@ -1,9 +1,5 @@
 package com.andrewmarques.android.organize.model;
 
-import com.andrewmarques.android.organize.config.ConfigFirebase;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Exclude;
-
 /*
     Criado por: Andrew Marques Silva
     Github: https://github.com/AndrewMarques2018
@@ -17,8 +13,8 @@ public class Usuario {
     private String nome;
     private String email;
     private String senha;
-    private Double receitaTotal = 0.00;
-    private Double despesaTotal = 0.00;
+    private Float receitaTotal = 0.00f;
+    private Float despesaTotal = 0.00f;
 
     public Usuario(String nome, String email, String senha) {
         this.nome = nome;
@@ -27,13 +23,6 @@ public class Usuario {
     }
 
     public Usuario() {
-    }
-
-    public void salvar (){
-        DatabaseReference firebase = ConfigFirebase.getDatabaseReference();
-        firebase.child("usuarios")
-                .child( this.idUser )
-                .setValue(this);
     }
 
     public String getNome() {
@@ -52,7 +41,6 @@ public class Usuario {
         this.email = email;
     }
 
-    @Exclude
     public String getSenha() {
         return senha;
     }
@@ -61,7 +49,6 @@ public class Usuario {
         this.senha = senha;
     }
 
-    @Exclude
     public String getIdUser() {
         return idUser;
     }
@@ -70,19 +57,31 @@ public class Usuario {
         this.idUser = idUser;
     }
 
-    public Double getReceitaTotal() {
+    public Float getReceitaTotal() {
         return receitaTotal;
     }
 
-    public void setReceitaTotal(Double receitaTotal) {
+    public void setReceitaTotal(Float receitaTotal) {
         this.receitaTotal = receitaTotal;
     }
 
-    public Double getDespesaTotal() {
+    public Float getDespesaTotal() {
         return despesaTotal;
     }
 
-    public void setDespesaTotal(Double despesaTotal) {
+    public void setDespesaTotal(Float despesaTotal) {
         this.despesaTotal = despesaTotal;
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "idUser='" + idUser + '\'' +
+                ", nome='" + nome + '\'' +
+                ", email='" + email + '\'' +
+                ", senha='" + senha + '\'' +
+                ", receitaTotal=" + receitaTotal +
+                ", despesaTotal=" + despesaTotal +
+                '}';
     }
 }

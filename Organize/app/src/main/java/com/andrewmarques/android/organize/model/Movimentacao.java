@@ -1,11 +1,5 @@
 package com.andrewmarques.android.organize.model;
 
-import com.andrewmarques.android.organize.config.ConfigFirebase;
-import com.andrewmarques.android.organize.helper.Base64Custom;
-import com.andrewmarques.android.organize.helper.DateCustom;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-
 import java.io.Serializable;
 
 /*
@@ -22,52 +16,10 @@ public class Movimentacao implements Serializable, Comparable<Movimentacao>{
     private String categoria;
     private String descricao;
     private String tipo;
-    private Double valor;
+    private Float valor;
     private String fk_usuario;
 
     public Movimentacao() {
-    }
-
-    public void deletar (String key){
-
-        FirebaseAuth auth = ConfigFirebase.getAuth();
-        String idUser = Base64Custom.codificarBase64( auth.getCurrentUser().getEmail() );
-
-        DatabaseReference firebase = ConfigFirebase.getDatabaseReference();
-        firebase.child("movimentacao")
-                .child(idUser)
-                .child(DateCustom.getMesAno(data))
-                .child(key)
-                .removeValue();
-
-    }
-
-    public void atualizar (String key){
-
-        FirebaseAuth auth = ConfigFirebase.getAuth();
-        String idUser = Base64Custom.codificarBase64( auth.getCurrentUser().getEmail() );
-
-        DatabaseReference firebase = ConfigFirebase.getDatabaseReference();
-        firebase.child("movimentacao")
-                .child(idUser)
-                .child(DateCustom.getMesAno(data))
-                .child(key)
-                .setValue(this);
-
-    }
-
-    public void salvar (){
-
-        FirebaseAuth auth = ConfigFirebase.getAuth();
-        String idUser = Base64Custom.codificarBase64( auth.getCurrentUser().getEmail() );
-
-        DatabaseReference firebase = ConfigFirebase.getDatabaseReference();
-        firebase.child("movimentacao")
-                .child(idUser)
-                .child(DateCustom.getMesAno(data))
-                .push()
-                .setValue(this);
-
     }
 
     public String getFk_usuario() {
@@ -118,20 +70,24 @@ public class Movimentacao implements Serializable, Comparable<Movimentacao>{
         this.tipo = tipo;
     }
 
-    public Double getValor() {
+    public Float getValor() {
         return valor;
     }
 
-    public void setValor(Double valor) {
+    public void setValor(Float valor) {
         this.valor = valor;
     }
 
     @Override
     public String toString() {
         return "Movimentacao{" +
-                "data='" + data + '\'' +
+                "idMovimentacao='" + idMovimentacao + '\'' +
+                ", data='" + data + '\'' +
+                ", categoria='" + categoria + '\'' +
+                ", descricao='" + descricao + '\'' +
+                ", tipo='" + tipo + '\'' +
                 ", valor=" + valor +
-                ", key='" + idMovimentacao + '\'' +
+                ", fk_usuario='" + fk_usuario + '\'' +
                 '}';
     }
 

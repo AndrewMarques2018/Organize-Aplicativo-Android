@@ -10,8 +10,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.andrewmarques.android.organize.R;
-import com.andrewmarques.android.organize.config.ConfigFirebase;
 import com.andrewmarques.android.organize.helper.Base64Custom;
+import com.andrewmarques.android.organize.helper.FirebaseHelper;
+import com.andrewmarques.android.organize.helper.MySharedPreferencs;
 import com.andrewmarques.android.organize.model.Usuario;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -30,9 +31,10 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 
 public class CadastroActivity extends AppCompatActivity {
 
+    private MySharedPreferencs mySharedPreferencs;
+
     private EditText campoNome, campoEmail, campoSenha;
     private Button btCadastrar;
-    private FirebaseAuth auth;
     private Usuario usuario;
 
     @Override
@@ -45,6 +47,8 @@ public class CadastroActivity extends AppCompatActivity {
         campoSenha = findViewById(R.id.txtCadastroSenha);
         btCadastrar = findViewById(R.id.btCadastro);
 
+        mySharedPreferencs = new MySharedPreferencs(getApplicationContext());
+
         btCadastrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,7 +58,7 @@ public class CadastroActivity extends AppCompatActivity {
                 email = campoEmail.getText().toString();
 
                 if(!nome.isEmpty() && !senha.isEmpty() && !email.isEmpty()){
-                    usuario = new Usuario(nome, email, senha);
+                    usuario = new Usuario(nome, email, Base64Custom.codificarBase64(senha));
                     cadastrarUser();
 
                 }else {
@@ -67,44 +71,42 @@ public class CadastroActivity extends AppCompatActivity {
     }
 
     public void cadastrarUser (){
-        auth = ConfigFirebase.getAuth();
 
-        auth.createUserWithEmailAndPassword(usuario.getEmail(), usuario.getSenha())
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
+        FirebaseAuth auth = FirebaseHelper.getAuth();
+        auth.createUserWithEmailAndPassword(usuario.getEmail(), Base64Custom.decodificarBase64(usuario.getSenha()))
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        String excecao = "";
+                        if (task.isSuccessful()){
+                            String idUser = Base64Custom.codificarBase64(usuario.getEmail());
+                            usuario.setIdUser(idUser);
+                            if (mySharedPreferencs.salvarUsuarioAtual(usuario)) {
+                                FirebaseHelper.atualizarUsuario(usuario);
+                            }
 
-                    String idUser = Base64Custom.codificarBase64(usuario.getEmail());
-                    usuario.setIdUser(idUser);
-                    usuario.salvar();
-                    finish();
+                            finish();
+                        }else{
+                            try {
+                                throw task.getException();
+                            }catch (FirebaseAuthWeakPasswordException e) {
+                                excecao = "Digite uma senha mais forte";
 
-                }else{
+                            }catch (FirebaseAuthInvalidCredentialsException e) {
+                                excecao = "Por favor, digite um email válido";
 
-                    String excecao = "";
+                            }catch (FirebaseAuthUserCollisionException e) {
+                                excecao = "Esta conta já foi cadastrada";
 
-                    try {
-                        throw task.getException();
-                    }catch (FirebaseAuthWeakPasswordException e) {
-                        excecao = "Digite uma senha mais forte";
+                            }catch (Exception e) {
+                                excecao = "Erro ao cadastrar usuario: " + e.getMessage();
+                                e.printStackTrace();
+                            }
 
-                    }catch (FirebaseAuthInvalidCredentialsException e) {
-                        excecao = "Por favor, digite um email válido";
-
-                    }catch (FirebaseAuthUserCollisionException e) {
-                        excecao = "Esta conta já foi cadastrada";
-
-                    }catch (Exception e) {
-                        excecao = "Erro ao cadastrar usuario: " + e.getMessage();
-                        e.printStackTrace();
+                            Toast.makeText(CadastroActivity.this,
+                                    excecao, Toast.LENGTH_SHORT).show();
+                        }
                     }
-
-                    Toast.makeText(CadastroActivity.this,
-                            excecao, Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
+                });
     }
 }

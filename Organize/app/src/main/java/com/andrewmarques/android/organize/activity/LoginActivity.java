@@ -11,7 +11,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.andrewmarques.android.organize.R;
-import com.andrewmarques.android.organize.config.ConfigFirebase;
+import com.andrewmarques.android.organize.helper.Base64Custom;
+import com.andrewmarques.android.organize.helper.FirebaseHelper;
+import com.andrewmarques.android.organize.helper.MySharedPreferencs;
 import com.andrewmarques.android.organize.model.Usuario;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -29,9 +31,10 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private MySharedPreferencs mySharedPreferencs;
+
     private EditText campoEmail, campoSenha;
     private Button btLogin;
-    private FirebaseAuth auth;
     private Usuario usuario;
 
     @Override
@@ -43,6 +46,8 @@ public class LoginActivity extends AppCompatActivity {
         campoSenha = findViewById(R.id.txtLoginSenha);
         btLogin = findViewById(R.id.btLogin);
 
+        mySharedPreferencs = new MySharedPreferencs(getApplicationContext());
+
         btLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(!senha.isEmpty() && !email.isEmpty()){
                     usuario = new Usuario();
                     usuario.setEmail(email);
-                    usuario.setSenha(senha);
+                    usuario.setSenha(Base64Custom.codificarBase64(senha));
                     loginUser();
 
                 }else {
@@ -67,36 +72,34 @@ public class LoginActivity extends AppCompatActivity {
 
     public void loginUser () {
 
-        auth = ConfigFirebase.getAuth();
-
-        auth.signInWithEmailAndPassword(usuario.getEmail(), usuario.getSenha())
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            abrirTelaPrincipal();
-
-                        } else {
-                            String excecao = "";
-
-                            try {
-                                throw task.getException();
-                            }catch (FirebaseAuthInvalidUserException e){
-                                excecao = "Usuario não está cadastrado";
-                                e.printStackTrace();
-                            }catch (FirebaseAuthInvalidCredentialsException e){
-                                excecao = "Email e senha não correspondem a um usário cadastrado";
-                                e.printStackTrace();
-                            }catch (Exception e){
-                                excecao = "Erro ao fazer login: " + e.getMessage();
-                                e.printStackTrace();
-                            }
-
-                            Toast.makeText(LoginActivity.this,
-                                    excecao, Toast.LENGTH_SHORT).show();
-                        }
+        FirebaseAuth auth = FirebaseHelper.getAuth();
+        auth.signInWithEmailAndPassword(usuario.getEmail(), Base64Custom.decodificarBase64(usuario.getSenha()))
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()){
+                    abrirTelaPrincipal();
+                }else{
+                    String excecao = "";
+                    try {
+                        throw task.getException();
+                    }catch (FirebaseAuthInvalidUserException e){
+                        excecao = "Usuario não está cadastrado";
+                        e.printStackTrace();
+                    }catch (FirebaseAuthInvalidCredentialsException e){
+                        excecao = "Email e senha não correspondem a um usário cadastrado";
+                        e.printStackTrace();
+                    }catch (Exception e){
+                        excecao = "Erro ao fazer login: " + e.getMessage();
+                        e.printStackTrace();
                     }
-                });
+
+                    Toast.makeText(LoginActivity.this,
+                            excecao, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
     }
 
     public void abrirTelaPrincipal (){

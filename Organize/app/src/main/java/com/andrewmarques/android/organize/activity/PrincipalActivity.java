@@ -6,26 +6,25 @@ import android.os.Bundle;
 
 import com.andrewmarques.android.organize.R;
 import com.andrewmarques.android.organize.adapter.AdapterMovimentacao;
-import com.andrewmarques.android.organize.config.ConfigFirebase;
 import com.andrewmarques.android.organize.databinding.ActivityPrincipalBinding;
-import com.andrewmarques.android.organize.helper.Base64Custom;
-import com.andrewmarques.android.organize.helper.DBhelper;
 import com.andrewmarques.android.organize.helper.DateCustom;
+import com.andrewmarques.android.organize.helper.FirebaseHelper;
+import com.andrewmarques.android.organize.helper.MovimentacaoDAO;
+import com.andrewmarques.android.organize.helper.MySharedPreferencs;
 import com.andrewmarques.android.organize.helper.RecyclerItemClickListener;
 import com.andrewmarques.android.organize.model.Movimentacao;
 import com.andrewmarques.android.organize.model.Usuario;
 import com.applandeo.materialcalendarview.CalendarView;
 import com.applandeo.materialcalendarview.listeners.OnCalendarPageChangeListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -51,32 +50,27 @@ import java.util.List;
 
 public class PrincipalActivity extends AppCompatActivity {
 
-    private FirebaseAuth auth = ConfigFirebase.getAuth();
-    private DatabaseReference firebase = ConfigFirebase.getDatabaseReference();
-    private DatabaseReference userRef;
-    private ValueEventListener valueEventListenerUser;
+    private MySharedPreferencs mySharedPreferencs;
+    private MovimentacaoDAO movimentacaoDAO;
 
     private ActivityPrincipalBinding binding;
     private CalendarView calendarView;
     private TextView txtSaudacao, txtSaldo;
-    private Double despesaTotal = 0.00;
-    private Double receitaTotal = 0.00;
-    private Double resumoTotal = 0.00;
+    private Float despesaTotal = 0.00f;
+    private Float receitaTotal = 0.00f;
+    private Float resumoTotal = 0.00f;
     private TextView txtValorSaldoMensal;
 
     private RecyclerView recyclerView;
     private AdapterMovimentacao adapterMovimentacao;
     private List<Movimentacao> movimentacoes = new ArrayList<>();
     private Movimentacao movimentacao;
-    private DatabaseReference movimentacaoRef;
-    private ValueEventListener valueEventListenerMovimentacoes;
     private String mesAnoSelecionado;
+    private List<String> mesAnoComInformacoes = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        DBhelper dBhelper =  new DBhelper(getApplicationContext());
 
         binding = ActivityPrincipalBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -87,6 +81,9 @@ public class PrincipalActivity extends AppCompatActivity {
         calendarView = findViewById(R.id.calendarView);
         txtValorSaldoMensal = findViewById(R.id.txtValorSaldoMensal);
         recyclerView = findViewById(R.id.recycleMovimentos);
+
+        movimentacaoDAO = new MovimentacaoDAO(getApplicationContext());
+        mySharedPreferencs = new MySharedPreferencs(getApplicationContext());
 
         addOnItemClickListener();
         swipe();
@@ -105,8 +102,52 @@ public class PrincipalActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        resgatarUsuarioFirebase();
+        resgatarMovimentacoesFirebase();
         recuperarResumo();
-        recuperarMovimentacoes();
+        atualizarMovimentacoes();
+    }
+
+    public void resgatarUsuarioFirebase () {
+
+        FirebaseHelper.usuarioValueEventListener = FirebaseHelper.getUsuarioReference()
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Usuario usuario = snapshot.getValue(Usuario.class);
+                        mySharedPreferencs.salvarUsuarioAtual(usuario);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+
+    public void resgatarMovimentacoesFirebase (){
+
+        FirebaseHelper.getMovimentacaoReference()
+            .addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    mesAnoComInformacoes.clear();
+
+                    for (DataSnapshot dados : snapshot.getChildren()) {
+                        for (DataSnapshot dados2 : dados.getChildren()) {
+                            Movimentacao movimentacao = dados2.getValue(Movimentacao.class);
+                            Log.i("teste", "mesAno sna: " + movimentacao);
+                            movimentacaoDAO.put(movimentacao);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
     }
 
     public void swipe () {
@@ -191,14 +232,25 @@ public class PrincipalActivity extends AppCompatActivity {
                 int position = viewHolder.getAdapterPosition();
                 movimentacao = movimentacoes.get(position);
 
-                String emailUser = auth.getCurrentUser().getEmail();
-                String idUser = Base64Custom.codificarBase64(emailUser);
-                movimentacaoRef = firebase.child("movimentacao").child(idUser).child(mesAnoSelecionado);
+                if (movimentacaoDAO.deletar(movimentacao)){
+                    FirebaseHelper.deletar(movimentacao);
+                    adapterMovimentacao.notifyItemRemoved(position);
+                }
 
-                movimentacaoRef.child(movimentacao.getIdMovimentacao()).removeValue();
-                adapterMovimentacao.notifyItemRemoved(position);
+                Usuario usuario = mySharedPreferencs.getUsuarioAtual();
+                if (movimentacao.getTipo().equals("r")){
+                    receitaTotal -= movimentacao.getValor();
+                    usuario.setReceitaTotal(receitaTotal);
+                }else
+                if (movimentacao.getTipo().equals("d")){
+                    despesaTotal -= movimentacao.getValor();
+                    usuario.setDespesaTotal(despesaTotal);
+                }
+                if (mySharedPreferencs.salvarUsuarioAtual(usuario)){
+                    FirebaseHelper.atualizarUsuario(usuario);
+                }
 
-                atualizarSaldo();
+                atualizarMovimentacoes();
             }
         });
 
@@ -208,66 +260,21 @@ public class PrincipalActivity extends AppCompatActivity {
                 Toast.makeText(PrincipalActivity.this,
                         "Cancelado",
                         Toast.LENGTH_SHORT).show();
-
-                adapterMovimentacao.notifyDataSetChanged();
             }
         });
 
         AlertDialog alert = alertDialog.create();
         alert.show();
-
-
     }
 
-    public void atualizarSaldo () {
+    public void atualizarMovimentacoes () {
 
-        String emailUser = auth.getCurrentUser().getEmail();
-        String idUser = Base64Custom.codificarBase64(emailUser);
-        userRef = firebase.child("usuarios").child(idUser);
+        movimentacoes.clear();
+        movimentacoes.addAll(movimentacaoDAO.listar(mesAnoSelecionado));
+        Collections.sort(movimentacoes);
+        configurarSaldoMensal();
 
-        if (movimentacao.getTipo().equals("r")){
-            receitaTotal -= movimentacao.getValor();
-            userRef.child("receitaTotal").setValue(receitaTotal);
-
-        }
-
-        if (movimentacao.getTipo().equals("d")){
-            despesaTotal -= movimentacao.getValor();
-            userRef.child("despesaTotal").setValue(despesaTotal);
-
-        }
-    }
-
-    public void recuperarMovimentacoes (){
-
-        String emailUser = auth.getCurrentUser().getEmail();
-        String idUser = Base64Custom.codificarBase64(emailUser);
-        movimentacaoRef = firebase.child("movimentacao").child(idUser).child(mesAnoSelecionado);
-
-        valueEventListenerMovimentacoes = movimentacaoRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                movimentacoes.clear();
-
-                for (DataSnapshot dados: snapshot.getChildren()){
-                    Movimentacao movimentacao = dados.getValue(Movimentacao.class);
-                    movimentacao.setIdMovimentacao( dados.getKey() );
-
-                    movimentacoes.add(movimentacao);
-                }
-
-                Collections.sort(movimentacoes);
-                configurarSaldoMensal();
-
-                adapterMovimentacao.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        adapterMovimentacao.notifyDataSetChanged();
     }
 
     public void configurarSaldoMensal () {
@@ -303,29 +310,15 @@ public class PrincipalActivity extends AppCompatActivity {
 
     public void recuperarResumo (){
 
-        String emailUser = auth.getCurrentUser().getEmail();
-        String idUser = Base64Custom.codificarBase64(emailUser);
-        userRef = firebase.child("usuarios").child(idUser);
+        Usuario usuario = mySharedPreferencs.getUsuarioAtual();
+        despesaTotal = usuario.getDespesaTotal();
+        receitaTotal = usuario.getReceitaTotal();
+        resumoTotal = receitaTotal - despesaTotal;
 
-        valueEventListenerUser = userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Usuario usuario = snapshot.getValue(Usuario.class);
+        DecimalFormat decimalFormat = new DecimalFormat( "0.00" );
+        txtSaldo.setText("R$ " + decimalFormat.format(resumoTotal));
+        txtSaudacao.setText("Olá " + usuario.getNome());
 
-                despesaTotal = usuario.getDespesaTotal();
-                receitaTotal = usuario.getReceitaTotal();
-                resumoTotal = receitaTotal - despesaTotal;
-
-                DecimalFormat decimalFormat = new DecimalFormat( "0.00" );
-                txtSaldo.setText("R$ " + decimalFormat.format(resumoTotal));
-                txtSaudacao.setText("Olá " + usuario.getNome());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
     }
 
     public void configuracaoCalendarView (){
@@ -338,8 +331,8 @@ public class PrincipalActivity extends AppCompatActivity {
             @Override
             public void onChange() {
                 mesAnoSelecionado = DateCustom.parseMillisOfMesAno(calendarView.getCurrentPageDate().getTimeInMillis());
-                movimentacaoRef.removeEventListener(valueEventListenerMovimentacoes);
-                recuperarMovimentacoes();
+                FirebaseHelper.removeMovimentacaoEventListener();
+                atualizarMovimentacoes();
             }
         });
 
@@ -347,10 +340,18 @@ public class PrincipalActivity extends AppCompatActivity {
             @Override
             public void onChange() {
                 mesAnoSelecionado = DateCustom.parseMillisOfMesAno(calendarView.getCurrentPageDate().getTimeInMillis());
-                movimentacaoRef.removeEventListener(valueEventListenerMovimentacoes);
-                recuperarMovimentacoes();
+                FirebaseHelper.removeMovimentacaoEventListener();
+                atualizarMovimentacoes();
             }
         });
+    }
+
+    public void addReceita (View view){
+        startActivity(new Intent(this, ReceitasActivity.class));
+    }
+
+    public void addDespesa (View view){
+        startActivity(new Intent( this, DespesasActivity.class));
     }
 
     @Override
@@ -363,26 +364,45 @@ public class PrincipalActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.menuSair:
-                auth.signOut();
-                startActivity(new Intent(this, MainActivity.class));
-                finish();
+
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+                alertDialog.setTitle("Organize Finance");
+                alertDialog.setMessage("Deseja sair da Conta ?");
+                alertDialog.setCancelable(true);
+
+                alertDialog.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        FirebaseHelper.stop();
+                        FirebaseHelper.signOut();
+                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        finish();
+                    }
+                });
+
+                alertDialog.setNegativeButton("Cancelar", null);
+
+                AlertDialog alert = alertDialog.create();
+                alert.show();
+
                 break;
         }
+
         return super.onOptionsItemSelected(item);
-    }
-
-    public void addReceita (View view){
-        startActivity(new Intent(this, ReceitasActivity.class));
-    }
-
-    public void addDespesa (View view){
-        startActivity(new Intent( this, DespesasActivity.class));
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        userRef.removeEventListener( valueEventListenerUser );
-        movimentacaoRef.removeEventListener(valueEventListenerMovimentacoes);
+        FirebaseHelper.stop();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mySharedPreferencs.finalizar();
+        FirebaseHelper.stop();
+    }
+
 }
