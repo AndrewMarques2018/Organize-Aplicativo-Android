@@ -102,20 +102,31 @@ public class PrincipalActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        resgatarUsuarioFirebase();
+
+        atualizarUsuario();
+        //salvarMovimentacoesNoFirebase();
         resgatarMovimentacoesFirebase();
+
         recuperarResumo();
         atualizarMovimentacoes();
     }
 
-    public void resgatarUsuarioFirebase () {
+    public void atualizarUsuario () {
 
-        FirebaseHelper.usuarioValueEventListener = FirebaseHelper.getUsuarioReference()
+        FirebaseHelper.getUsuarioReference()
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Usuario usuario = snapshot.getValue(Usuario.class);
-                        mySharedPreferencs.salvarUsuarioAtual(usuario);
+                        Usuario usuarioFirebase = snapshot.getValue(Usuario.class);
+                        Usuario usuarioLocal = mySharedPreferencs.getUsuarioAtual();
+
+                        if (usuarioFirebase.compareTo(usuarioLocal) == 1){
+                            mySharedPreferencs.salvarUsuarioAtual(usuarioFirebase);
+                        }else
+                        if (usuarioFirebase.compareTo(usuarioLocal) == -1){
+                            FirebaseHelper.atualizarUsuario(usuarioLocal);
+                        }
+
                     }
 
                     @Override
@@ -131,15 +142,28 @@ public class PrincipalActivity extends AppCompatActivity {
             .addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    mesAnoComInformacoes.clear();
+
+                    float valorDespesaTotal = 0.0f;
+                    float valorReceitaTotal = 0.0f;
 
                     for (DataSnapshot dados : snapshot.getChildren()) {
                         for (DataSnapshot dados2 : dados.getChildren()) {
                             Movimentacao movimentacao = dados2.getValue(Movimentacao.class);
-                            Log.i("teste", "mesAno sna: " + movimentacao);
                             movimentacaoDAO.put(movimentacao);
+
+                            if(movimentacao.getTipo().equals("r")){
+                                valorReceitaTotal += movimentacao.getValor();
+                            }else
+                            if(movimentacao.getTipo().equals("d")){
+                                valorDespesaTotal += movimentacao.getValor();
+                            }
                         }
                     }
+
+                    Usuario usuario = mySharedPreferencs.getUsuarioAtual();
+                    usuario.setReceitaTotal(valorReceitaTotal);
+                    usuario.setDespesaTotal(valorDespesaTotal);
+                    mySharedPreferencs.salvarUsuarioAtual(usuario);
                 }
 
                 @Override
@@ -241,16 +265,20 @@ public class PrincipalActivity extends AppCompatActivity {
                 if (movimentacao.getTipo().equals("r")){
                     receitaTotal -= movimentacao.getValor();
                     usuario.setReceitaTotal(receitaTotal);
+                    usuario.setDataModificação();
                 }else
                 if (movimentacao.getTipo().equals("d")){
                     despesaTotal -= movimentacao.getValor();
                     usuario.setDespesaTotal(despesaTotal);
+                    usuario.setDataModificação();
                 }
+
                 if (mySharedPreferencs.salvarUsuarioAtual(usuario)){
                     FirebaseHelper.atualizarUsuario(usuario);
                 }
 
                 atualizarMovimentacoes();
+                recuperarResumo();
             }
         });
 
@@ -333,6 +361,7 @@ public class PrincipalActivity extends AppCompatActivity {
                 mesAnoSelecionado = DateCustom.parseMillisOfMesAno(calendarView.getCurrentPageDate().getTimeInMillis());
                 FirebaseHelper.removeMovimentacaoEventListener();
                 atualizarMovimentacoes();
+                recuperarResumo();
             }
         });
 
@@ -342,6 +371,7 @@ public class PrincipalActivity extends AppCompatActivity {
                 mesAnoSelecionado = DateCustom.parseMillisOfMesAno(calendarView.getCurrentPageDate().getTimeInMillis());
                 FirebaseHelper.removeMovimentacaoEventListener();
                 atualizarMovimentacoes();
+                recuperarResumo();
             }
         });
     }
@@ -374,10 +404,7 @@ public class PrincipalActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        FirebaseHelper.stop();
-                        FirebaseHelper.signOut();
-                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                        finish();
+                        finalizarAplication();
                     }
                 });
 
@@ -390,6 +417,15 @@ public class PrincipalActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void finalizarAplication (){
+        movimentacaoDAO.limpar();
+        FirebaseHelper.stop();
+        FirebaseHelper.signOut();
+        mySharedPreferencs.finalizar();
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        finish();
     }
 
     @Override
@@ -405,4 +441,18 @@ public class PrincipalActivity extends AppCompatActivity {
         FirebaseHelper.stop();
     }
 
+    public boolean salvarMovimentacoesNoFirebase (){
+
+        for (Movimentacao m : movimentacaoDAO.listar() ) {
+            Log.i("teste", "movimentacao a ser salva: " + m);
+            if (!FirebaseHelper.salvarMovimentacao(movimentacao)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean salvarUsuarioNoFirebase (){
+        return FirebaseHelper.atualizarUsuario(mySharedPreferencs.getUsuarioAtual());
+    }
 }

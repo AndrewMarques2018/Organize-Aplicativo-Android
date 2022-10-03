@@ -33,8 +33,7 @@ public class MySharedPreferencs {
         usuarioAtual.setSenha(sp.getString("senha_usuario_atual", null));
         usuarioAtual.setReceitaTotal(sp.getFloat("receitaTotal_usuario_atual", 0f));
         usuarioAtual.setDespesaTotal(sp.getFloat("despesaTotal_usuario_atual", 0f));
-
-        Log.i("Shared", "valor : " + usuarioAtual);
+        sp.getString("dataModificacao_usuario_atual", "");
 
         sp.registerOnSharedPreferenceChangeListener(callback);
     }
@@ -48,13 +47,6 @@ public class MySharedPreferencs {
         try {
             SharedPreferences sp = context.getSharedPreferences(USER_ATUAL_PREFERENCES, MODE_PRIVATE);
 
-            usuarioAtual.setIdUser(sp.getString("id_usuario_atual", null));
-            usuarioAtual.setNome(sp.getString("nome_usuario_atual", null));
-            usuarioAtual.setEmail(sp.getString("email_usuario_atual", null));
-            usuarioAtual.setSenha(sp.getString("senha_usuario_atual", null));
-            usuarioAtual.setReceitaTotal(sp.getFloat("receitaTotal_usuario_atual", 0f));
-            usuarioAtual.setDespesaTotal(sp.getFloat("despesaTotal_usuario_atual", 0f));
-
             SharedPreferences.Editor editor = sp.edit();
             editor.putString("id_usuario_atual", usuario.getIdUser());
             editor.putString("nome_usuario_atual", usuario.getNome());
@@ -62,8 +54,10 @@ public class MySharedPreferencs {
             editor.putString("senha_usuario_atual", usuario.getSenha());
             editor.putFloat("receitaTotal_usuario_atual", usuario.getReceitaTotal());
             editor.putFloat("despesaTotal_usuario_atual", usuario.getDespesaTotal());
+            editor.putString("dataModificacao_usuario_atual", usuario.getDataModificação());
 
             editor.commit();
+
         } catch (Exception e){
             Log.e("MySharedPreferences", "Erro ao salvar usuario: " + e.getMessage());
             return false;
@@ -74,7 +68,6 @@ public class MySharedPreferencs {
 
     public Usuario getUsuarioAtual (){
 
-        Log.i("Shared" , "getUsuario: " + usuarioAtual);
         return this.usuarioAtual;
     }
 

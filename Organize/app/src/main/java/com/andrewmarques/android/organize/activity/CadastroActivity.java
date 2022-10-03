@@ -81,6 +81,8 @@ public class CadastroActivity extends AppCompatActivity {
                         if (task.isSuccessful()){
                             String idUser = Base64Custom.codificarBase64(usuario.getEmail());
                             usuario.setIdUser(idUser);
+                            usuario.setDataModificação();
+
                             if (mySharedPreferencs.salvarUsuarioAtual(usuario)) {
                                 FirebaseHelper.atualizarUsuario(usuario);
                             }

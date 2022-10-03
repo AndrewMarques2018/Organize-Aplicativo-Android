@@ -1,6 +1,8 @@
 package com.andrewmarques.android.organize.model;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /*
     Criado por: Andrew Marques Silva
@@ -19,7 +21,18 @@ public class Movimentacao implements Serializable, Comparable<Movimentacao>{
     private Float valor;
     private String fk_usuario;
 
+    private String dataModificação;
+
     public Movimentacao() {
+    }
+
+    public String getDataModificação() {
+        return dataModificação;
+    }
+
+    public void setDataModificação() {
+        Date dataAtual = new Date();
+        this.dataModificação = new SimpleDateFormat("dd/MM/yyyy").format(dataAtual);
     }
 
     public String getFk_usuario() {

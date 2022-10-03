@@ -201,6 +201,7 @@ public class DespesasActivity extends AppCompatActivity {
 
         Usuario usuario = mySharedPreferencs.getUsuarioAtual();
         usuario.setReceitaTotal(despesaTotal);
+        usuario.setDataModificação();
 
         if (mySharedPreferencs.salvarUsuarioAtual(usuario)){
             FirebaseHelper.atualizarUsuario(usuario);

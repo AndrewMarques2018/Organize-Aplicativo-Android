@@ -1,20 +1,11 @@
 package com.andrewmarques.android.organize.helper;
 
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-
 import com.andrewmarques.android.organize.model.Movimentacao;
 import com.andrewmarques.android.organize.model.Usuario;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /*
     Criado por: Andrew Marques Silva
@@ -48,6 +39,7 @@ public class FirebaseHelper {
 
     public static DatabaseReference getMovimentacaoReference (String mesAnoSelecionado){
 
+        auth = getAuth();
         String emailUser = auth.getCurrentUser().getEmail();
         String idUser = Base64Custom.codificarBase64(emailUser);
         return databaseReference.child("movimentacao").child(idUser).child(mesAnoSelecionado);
@@ -56,6 +48,7 @@ public class FirebaseHelper {
 
     public static DatabaseReference getMovimentacaoReference (){
 
+        auth = getAuth();
         String emailUser = auth.getCurrentUser().getEmail();
         String idUser = Base64Custom.codificarBase64(emailUser);
         return databaseReference.child("movimentacao").child(idUser);
@@ -64,6 +57,7 @@ public class FirebaseHelper {
 
     public static DatabaseReference getUsuarioReference (){
 
+        auth = getAuth();
         String emailUser = auth.getCurrentUser().getEmail();
         String idUser = Base64Custom.codificarBase64(emailUser);
         usuarioRef = databaseReference.child("usuarios").child(idUser);
@@ -77,19 +71,19 @@ public class FirebaseHelper {
         }
     }
 
-    public static void atualizarUsuario ( Usuario usuario) {
+    public static boolean atualizarUsuario ( Usuario usuario) {
 
        DatabaseReference usuarioReference = getUsuarioReference();
-       usuarioReference.setValue(usuario);
+       return usuarioReference.setValue(usuario).isSuccessful();
 
     }
 
-    public static void salvarMovimentacao ( Movimentacao movimentacao) {
+    public static boolean salvarMovimentacao ( Movimentacao movimentacao) {
 
         DatabaseReference movimentacaoReference = getMovimentacaoReference(DateCustom.getMesAno(movimentacao.getData()));
-        movimentacaoReference
+        return movimentacaoReference
                 .child(movimentacao.getIdMovimentacao())
-                .setValue(movimentacao);
+                .setValue(movimentacao).isSuccessful();
     }
 
     public static DatabaseReference getDatabaseReference(){

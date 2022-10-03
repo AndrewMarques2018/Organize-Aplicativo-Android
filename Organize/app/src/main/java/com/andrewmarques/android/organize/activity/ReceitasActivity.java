@@ -3,6 +3,7 @@ package com.andrewmarques.android.organize.activity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -39,7 +40,7 @@ public class ReceitasActivity extends AppCompatActivity {
     private TextInputEditText campoData, campoDescricao, campoCategoria;
     private EditText campoValor;
     private Float receitaTotal;
-    private Float receitaAtualizada;
+    private Float receitaAtualizada = 0.0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +59,7 @@ public class ReceitasActivity extends AppCompatActivity {
         campoData.setText(DateCustom.dataAtual());
 
         recuperarMovimentacao();
-        recuperarReceitaTotal();
+        receitaTotal = mySharedPreferencs.getUsuarioAtual().getReceitaTotal();
     }
 
     public void recuperarMovimentacao (){
@@ -83,8 +84,6 @@ public class ReceitasActivity extends AppCompatActivity {
         if (movimentacao != null){
             if(validarCamposReceitas()){
 
-                movimentacaoDAO.deletar(movimentacao);
-
                 Float valorAtual = movimentacao.getValor();
                 Float valorRecuperado = Float.parseFloat(campoValor.getText().toString());
 
@@ -94,36 +93,37 @@ public class ReceitasActivity extends AppCompatActivity {
                 movimentacao.setData(campoData.getText().toString());
 
                 receitaAtualizada = receitaTotal + valorRecuperado - valorAtual;
-                atualizarReceitas(receitaAtualizada);
 
                 if (movimentacaoDAO.atualizar(movimentacao)){
                     FirebaseHelper.salvarMovimentacao(movimentacao);
+                    atualizarReceitas(receitaAtualizada);
                 }
 
                 finish();
             }
-        }else
-        if(validarCamposReceitas()){
+        }else {
+            if (validarCamposReceitas()) {
 
-            Float valorRecuperado = Float.parseFloat(campoValor.getText().toString());
+                Float valorRecuperado = Float.parseFloat(campoValor.getText().toString());
 
-            movimentacao = new Movimentacao();
-            movimentacao.setIdMovimentacao(UUID.randomUUID().toString().replace("-",""));
-            movimentacao.setFk_usuario(mySharedPreferencs.getUsuarioAtual().getIdUser());
-            movimentacao.setValor( valorRecuperado );
-            movimentacao.setCategoria(campoCategoria.getText().toString());
-            movimentacao.setDescricao(campoDescricao.getText().toString());
-            movimentacao.setData(campoData.getText().toString());
-            movimentacao.setTipo("r");
+                movimentacao = new Movimentacao();
+                movimentacao.setIdMovimentacao(UUID.randomUUID().toString().replace("-", ""));
+                movimentacao.setFk_usuario(mySharedPreferencs.getUsuarioAtual().getIdUser());
+                movimentacao.setValor(valorRecuperado);
+                movimentacao.setCategoria(campoCategoria.getText().toString());
+                movimentacao.setDescricao(campoDescricao.getText().toString());
+                movimentacao.setData(campoData.getText().toString());
+                movimentacao.setTipo("r");
 
-            receitaAtualizada = receitaTotal + valorRecuperado;
-            atualizarReceitas(receitaAtualizada);
+                receitaAtualizada = receitaTotal + valorRecuperado;
 
-            if(movimentacaoDAO.salvar(movimentacao)){
-                FirebaseHelper.salvarMovimentacao(movimentacao);
+                if (movimentacaoDAO.salvar(movimentacao)) {
+                    FirebaseHelper.salvarMovimentacao(movimentacao);
+                    atualizarReceitas(receitaAtualizada);
+                }
+
+                finish();
             }
-
-            finish();
         }
     }
 
@@ -192,16 +192,11 @@ public class ReceitasActivity extends AppCompatActivity {
         return true;
     }
 
-    public void recuperarReceitaTotal(){
-
-        Usuario usuario = mySharedPreferencs.getUsuarioAtual();
-        receitaTotal = usuario.getReceitaTotal();
-    }
-
     public void atualizarReceitas(Float receitaTotal){
 
         Usuario usuario = mySharedPreferencs.getUsuarioAtual();
         usuario.setReceitaTotal(receitaTotal);
+        usuario.setDataModificação();
 
         if (mySharedPreferencs.salvarUsuarioAtual(usuario)){
             FirebaseHelper.atualizarUsuario(usuario);

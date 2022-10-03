@@ -7,7 +7,10 @@ package com.andrewmarques.android.organize.model;
     Instagram: https://www.instagram.com/andrewmarquessilva
  */
 
-public class Usuario {
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class Usuario implements Comparable<Usuario>{
 
     private String idUser;
     private String nome;
@@ -16,10 +19,21 @@ public class Usuario {
     private Float receitaTotal = 0.00f;
     private Float despesaTotal = 0.00f;
 
+    private String dataModificação = "";
+
     public Usuario(String nome, String email, String senha) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
+    }
+
+    public String getDataModificação() {
+        return dataModificação;
+    }
+
+    public void setDataModificação() {
+        Date dataAtual = new Date();
+        this.dataModificação = new SimpleDateFormat("yyyy/MM/dd").format(dataAtual);
     }
 
     public Usuario() {
@@ -83,5 +97,12 @@ public class Usuario {
                 ", receitaTotal=" + receitaTotal +
                 ", despesaTotal=" + despesaTotal +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Usuario o) {
+
+        return this.dataModificação.compareTo(o.getDataModificação());
+
     }
 }
