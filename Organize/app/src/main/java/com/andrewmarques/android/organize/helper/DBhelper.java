@@ -16,9 +16,10 @@ import androidx.annotation.Nullable;
 
 public class DBhelper extends SQLiteOpenHelper {
 
-    public static int VERSION = 1;
+    public static int VERSION = 2;
     public static String NOME_DB = "DB_ORGANIZE";
     public static String NOME_TABELA_MOVIMENTACOES = "MOVIMENTACAO";
+    public static String NOME_TABELA_CALLBACK = "MOVIMENTACAO_CALBACK";
 
     public DBhelper(Context context) {
         super(context, NOME_DB, null, VERSION);
@@ -39,16 +40,35 @@ public class DBhelper extends SQLiteOpenHelper {
                 " descricao TEXT NOT NULL " +
                 " ); ";
 
+        String sqlCallBack =
+                " CREATE TABLE IF NOT EXISTS " + NOME_TABELA_CALLBACK  +
+                " ( " +
+                " status CHAR (3) NOT NULL, " + // DEL- Deletada , ATU - atualizada
+                " idMovimentacao VARCHAR (100) NOT NULL PRIMARY KEY, " +
+                " fk_idUsuario VARCHAR (100) NOT NULL, "+
+                " mesAno CHAR (6) NOT NULL, " +
+                " tipo CHAR (1) NOT NULL, " +
+                " dataMovimentacao DATE NOT NULL, " +
+                " valor FLOAT NOT NULL, " +
+                " categoria VARCHAR (100) NOT NULL, " +
+                " descricao TEXT NOT NULL " +
+                " ); ";
+
         try {
             db.execSQL(sqlMovimentacoes);
         }catch (Exception e){
             Log.i("INFO_DB", "Erro ao criar a tabela de movimentacoes: " + e.getMessage());
         }
 
+        try {
+            db.execSQL(sqlCallBack);
+        }catch (Exception e){
+            Log.i("INFO_DB", "Erro ao criar a tabela de movimentacoes update: " + e.getMessage());
+        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        onCreate(db);
     }
 }

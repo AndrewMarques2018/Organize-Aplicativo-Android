@@ -1,7 +1,11 @@
 package com.andrewmarques.android.organize.activity;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkRequest;
 import android.os.Bundle;
 
 import com.andrewmarques.android.organize.R;
@@ -53,12 +57,16 @@ public class PrincipalActivity extends AppCompatActivity {
     private MySharedPreferencs mySharedPreferencs;
     private MovimentacaoDAO movimentacaoDAO;
 
+    ConnectivityManager connectivityManager;
+    NetworkRequest networkRequest;
+    ConnectivityManager.NetworkCallback networkCallback;
+    private boolean isOnline;
+
     private ActivityPrincipalBinding binding;
     private CalendarView calendarView;
     private TextView txtSaudacao, txtSaldo;
     private Float despesaTotal = 0.00f;
     private Float receitaTotal = 0.00f;
-    private Float resumoTotal = 0.00f;
     private TextView txtValorSaldoMensal;
 
     private RecyclerView recyclerView;
@@ -66,7 +74,6 @@ public class PrincipalActivity extends AppCompatActivity {
     private List<Movimentacao> movimentacoes = new ArrayList<>();
     private Movimentacao movimentacao;
     private String mesAnoSelecionado;
-    private List<String> mesAnoComInformacoes = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,73 +104,126 @@ public class PrincipalActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapterMovimentacao);
 
+        addNetworkCallback();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        atualizarUsuario();
-        //salvarMovimentacoesNoFirebase();
-        resgatarMovimentacoesFirebase();
+        if (isOnline){
+            atualizarUsuario();
+            verificarMovimentacoesCallBacks();
+            resgatarMovimentacoesFirebase();
+        }
 
         recuperarResumo();
-        atualizarMovimentacoes();
+        atualizarView();
+    }
+
+    public void addNetworkCallback() {
+        connectivityManager = (ConnectivityManager) getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        networkRequest = new NetworkRequest.Builder().build();
+        networkCallback = new ConnectivityManager.NetworkCallback() {
+            @Override
+            public void onLost(@NonNull Network network) {
+                isOnline = false;
+                super.onLost(network);
+            }
+
+            @Override
+            public void onAvailable(@NonNull Network network) {
+                isOnline = true;
+                super.onAvailable(network);
+            }
+        };
+
+        connectivityManager.registerNetworkCallback(networkRequest, networkCallback);
+    }
+
+    public void verificarMovimentacoesCallBacks() {
+
+        List<Movimentacao> movimentacaosCalbacks = movimentacaoDAO.listarCallBack();
+        for (Movimentacao callback : movimentacaosCalbacks) {
+            if (callback.getStatus().equals("DEL")){
+                FirebaseHelper.deletar(callback);
+                movimentacaoDAO.removeByCallBack(callback);
+            }
+            if (callback.getStatus().equals("ATU")){
+                FirebaseHelper.salvarMovimentacao(callback);
+                callback.setStatus("nul");
+                movimentacaoDAO.removeByCallBack(callback);
+
+            }
+        }
     }
 
     public void atualizarUsuario () {
 
-        FirebaseHelper.getUsuarioReference()
+        Log.i("atualizar usuario", "atualizar usuario: ");
+        FirebaseHelper.usuarioValueEventListener = FirebaseHelper.getUsuarioReference()
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Usuario usuarioFirebase = snapshot.getValue(Usuario.class);
                         Usuario usuarioLocal = mySharedPreferencs.getUsuarioAtual();
 
-                        if (usuarioFirebase.compareTo(usuarioLocal) == 1){
+                        if (usuarioLocal.getIdUser() != null || usuarioLocal.getNome() == null){
                             mySharedPreferencs.salvarUsuarioAtual(usuarioFirebase);
-                        }else
-                        if (usuarioFirebase.compareTo(usuarioLocal) == -1){
-                            FirebaseHelper.atualizarUsuario(usuarioLocal);
                         }
 
+                        assert usuarioFirebase != null;
+                        if (usuarioFirebase.compareTo(usuarioLocal) > 0){
+                            mySharedPreferencs.salvarUsuarioAtual(usuarioFirebase);
+                        }else
+                        if (usuarioFirebase.compareTo(usuarioLocal) < 0){
+                            FirebaseHelper.atualizarUsuario(usuarioLocal);
+                        }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
 
                     }
+
                 });
     }
 
     public void resgatarMovimentacoesFirebase (){
 
-        FirebaseHelper.getMovimentacaoReference()
+        FirebaseHelper.movimentacaoValueEventListener = FirebaseHelper.getMovimentacaoReference()
             .addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                    float valorDespesaTotal = 0.0f;
-                    float valorReceitaTotal = 0.0f;
-
                     for (DataSnapshot dados : snapshot.getChildren()) {
                         for (DataSnapshot dados2 : dados.getChildren()) {
                             Movimentacao movimentacao = dados2.getValue(Movimentacao.class);
+                            Log.i("resgatarmovfirebase: ", String.valueOf(movimentacao));
                             movimentacaoDAO.put(movimentacao);
+                        }
+                    }
 
-                            if(movimentacao.getTipo().equals("r")){
-                                valorReceitaTotal += movimentacao.getValor();
-                            }else
-                            if(movimentacao.getTipo().equals("d")){
-                                valorDespesaTotal += movimentacao.getValor();
-                            }
+                    float valorDespesaTotal = 0.0f;
+                    float valorReceitaTotal = 0.0f;
+
+                    for (Movimentacao movimentacao : movimentacaoDAO.listar()) {
+                        if(movimentacao.getTipo().equals("r")){
+                            valorReceitaTotal += movimentacao.getValor();
+                        }else
+                        if(movimentacao.getTipo().equals("d")){
+                            valorDespesaTotal += movimentacao.getValor();
                         }
                     }
 
                     Usuario usuario = mySharedPreferencs.getUsuarioAtual();
                     usuario.setReceitaTotal(valorReceitaTotal);
                     usuario.setDespesaTotal(valorDespesaTotal);
+                    usuario.setDataModificação();
+
                     mySharedPreferencs.salvarUsuarioAtual(usuario);
+                    FirebaseHelper.atualizarUsuario(usuario);
                 }
 
                 @Override
@@ -258,6 +318,7 @@ public class PrincipalActivity extends AppCompatActivity {
 
                 if (movimentacaoDAO.deletar(movimentacao)){
                     FirebaseHelper.deletar(movimentacao);
+                    movimentacaoDAO.putCallBack(movimentacao, "DEL");
                     adapterMovimentacao.notifyItemRemoved(position);
                 }
 
@@ -277,7 +338,7 @@ public class PrincipalActivity extends AppCompatActivity {
                     FirebaseHelper.atualizarUsuario(usuario);
                 }
 
-                atualizarMovimentacoes();
+                atualizarView();
                 recuperarResumo();
             }
         });
@@ -285,6 +346,7 @@ public class PrincipalActivity extends AppCompatActivity {
         alertDialog.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                adapterMovimentacao.notifyDataSetChanged();
                 Toast.makeText(PrincipalActivity.this,
                         "Cancelado",
                         Toast.LENGTH_SHORT).show();
@@ -295,7 +357,7 @@ public class PrincipalActivity extends AppCompatActivity {
         alert.show();
     }
 
-    public void atualizarMovimentacoes () {
+    public void atualizarView() {
 
         movimentacoes.clear();
         movimentacoes.addAll(movimentacaoDAO.listar(mesAnoSelecionado));
@@ -341,7 +403,7 @@ public class PrincipalActivity extends AppCompatActivity {
         Usuario usuario = mySharedPreferencs.getUsuarioAtual();
         despesaTotal = usuario.getDespesaTotal();
         receitaTotal = usuario.getReceitaTotal();
-        resumoTotal = receitaTotal - despesaTotal;
+        Float resumoTotal = receitaTotal - despesaTotal;
 
         DecimalFormat decimalFormat = new DecimalFormat( "0.00" );
         txtSaldo.setText("R$ " + decimalFormat.format(resumoTotal));
@@ -360,7 +422,7 @@ public class PrincipalActivity extends AppCompatActivity {
             public void onChange() {
                 mesAnoSelecionado = DateCustom.parseMillisOfMesAno(calendarView.getCurrentPageDate().getTimeInMillis());
                 FirebaseHelper.removeMovimentacaoEventListener();
-                atualizarMovimentacoes();
+                atualizarView();
                 recuperarResumo();
             }
         });
@@ -370,7 +432,7 @@ public class PrincipalActivity extends AppCompatActivity {
             public void onChange() {
                 mesAnoSelecionado = DateCustom.parseMillisOfMesAno(calendarView.getCurrentPageDate().getTimeInMillis());
                 FirebaseHelper.removeMovimentacaoEventListener();
-                atualizarMovimentacoes();
+                atualizarView();
                 recuperarResumo();
             }
         });
@@ -382,6 +444,17 @@ public class PrincipalActivity extends AppCompatActivity {
 
     public void addDespesa (View view){
         startActivity(new Intent( this, DespesasActivity.class));
+    }
+
+    public void finalizarAplication (){
+        connectivityManager.unregisterNetworkCallback(networkCallback);
+        movimentacaoDAO.limpar();
+        movimentacaoDAO.clearCallBack();
+        FirebaseHelper.stop();
+        FirebaseHelper.signOut();
+        mySharedPreferencs.finalizar();
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        finish();
     }
 
     @Override
@@ -419,15 +492,6 @@ public class PrincipalActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void finalizarAplication (){
-        movimentacaoDAO.limpar();
-        FirebaseHelper.stop();
-        FirebaseHelper.signOut();
-        mySharedPreferencs.finalizar();
-        startActivity(new Intent(getApplicationContext(), MainActivity.class));
-        finish();
-    }
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -436,23 +500,8 @@ public class PrincipalActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        connectivityManager.unregisterNetworkCallback(networkCallback);
         mySharedPreferencs.finalizar();
-        FirebaseHelper.stop();
-    }
-
-    public boolean salvarMovimentacoesNoFirebase (){
-
-        for (Movimentacao m : movimentacaoDAO.listar() ) {
-            Log.i("teste", "movimentacao a ser salva: " + m);
-            if (!FirebaseHelper.salvarMovimentacao(movimentacao)){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public boolean salvarUsuarioNoFirebase (){
-        return FirebaseHelper.atualizarUsuario(mySharedPreferencs.getUsuarioAtual());
+        super.onDestroy();
     }
 }

@@ -31,10 +31,10 @@ public class FirebaseHelper {
         return false;
     }
 
-    public static void deletar (Movimentacao movimentacao) {
+    public static boolean deletar (Movimentacao movimentacao) {
 
         movimentacaoRef = getMovimentacaoReference(DateCustom.getMesAno(movimentacao.getData()));
-        movimentacaoRef.child(movimentacao.getIdMovimentacao()).removeValue();
+        return movimentacaoRef.child(movimentacao.getIdMovimentacao()).removeValue().isSuccessful();
     }
 
     public static DatabaseReference getMovimentacaoReference (String mesAnoSelecionado){

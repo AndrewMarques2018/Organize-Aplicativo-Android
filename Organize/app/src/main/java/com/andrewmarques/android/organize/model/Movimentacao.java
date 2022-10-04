@@ -21,18 +21,17 @@ public class Movimentacao implements Serializable, Comparable<Movimentacao>{
     private Float valor;
     private String fk_usuario;
 
-    private String dataModificação;
+    private String status = "nul";
 
     public Movimentacao() {
     }
 
-    public String getDataModificação() {
-        return dataModificação;
+    public String getStatus() {
+        return status;
     }
 
-    public void setDataModificação() {
-        Date dataAtual = new Date();
-        this.dataModificação = new SimpleDateFormat("dd/MM/yyyy").format(dataAtual);
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getFk_usuario() {
@@ -95,12 +94,9 @@ public class Movimentacao implements Serializable, Comparable<Movimentacao>{
     public String toString() {
         return "Movimentacao{" +
                 "idMovimentacao='" + idMovimentacao + '\'' +
-                ", data='" + data + '\'' +
-                ", categoria='" + categoria + '\'' +
-                ", descricao='" + descricao + '\'' +
                 ", tipo='" + tipo + '\'' +
                 ", valor=" + valor +
-                ", fk_usuario='" + fk_usuario + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 

@@ -6,36 +6,47 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.andrewmarques.android.organize.model.Movimentacao;
 import com.andrewmarques.android.organize.model.Usuario;
+
+import java.util.List;
+
+/*
+    Criado por: Andrew Marques Silva
+    Github: https://github.com/AndrewMarques2018
+    Linkedin: https://www.linkedin.com/in/andrewmarques2018
+    Instagram: https://www.instagram.com/andrewmarquessilva
+ */
 
 public class MySharedPreferencs {
 
-    private Context context;
-    private Usuario usuarioAtual;
-    private static final String USER_ATUAL_PREFERENCES = "USER_ATUAL_PREFERENCES";
+    private final Context context;
+    private static Usuario usuarioAtual = new Usuario();
+    private static final String USER_ATUAL_PREFERENCES = "USER_ATUAL_PREF";
 
-    private SharedPreferences.OnSharedPreferenceChangeListener callback = new SharedPreferences.OnSharedPreferenceChangeListener() {
+    private final SharedPreferences.OnSharedPreferenceChangeListener callback = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
         }
     };
 
-    public MySharedPreferencs(Context context) {
+    public MySharedPreferencs(@NonNull Context context) {
         this.context = context;
 
-        usuarioAtual = new Usuario();
+        SharedPreferences spUser = context.getSharedPreferences(USER_ATUAL_PREFERENCES, MODE_PRIVATE);
+        usuarioAtual.setIdUser(spUser.getString("id", null));
+        usuarioAtual.setNome(spUser.getString("nome", null));
+        usuarioAtual.setEmail(spUser.getString("email", null));
+        usuarioAtual.setSenha(spUser.getString("senha", null));
+        usuarioAtual.setReceitaTotal(spUser.getFloat("receitaTotal", 0f));
+        usuarioAtual.setDespesaTotal(spUser.getFloat("despesaTotal", 0f));
+        usuarioAtual.setDataModificação();
+        spUser.getString("dataModificacao", "");
 
-        SharedPreferences sp = context.getSharedPreferences(USER_ATUAL_PREFERENCES, MODE_PRIVATE);
-        usuarioAtual.setIdUser(sp.getString("id_usuario_atual", null));
-        usuarioAtual.setNome(sp.getString("nome_usuario_atual", null));
-        usuarioAtual.setEmail(sp.getString("email_usuario_atual", null));
-        usuarioAtual.setSenha(sp.getString("senha_usuario_atual", null));
-        usuarioAtual.setReceitaTotal(sp.getFloat("receitaTotal_usuario_atual", 0f));
-        usuarioAtual.setDespesaTotal(sp.getFloat("despesaTotal_usuario_atual", 0f));
-        sp.getString("dataModificacao_usuario_atual", "");
-
-        sp.registerOnSharedPreferenceChangeListener(callback);
+        spUser.registerOnSharedPreferenceChangeListener(callback);
     }
 
     public void finalizar () {
@@ -45,16 +56,17 @@ public class MySharedPreferencs {
 
     public boolean salvarUsuarioAtual (Usuario usuario) {
         try {
+
             SharedPreferences sp = context.getSharedPreferences(USER_ATUAL_PREFERENCES, MODE_PRIVATE);
 
             SharedPreferences.Editor editor = sp.edit();
-            editor.putString("id_usuario_atual", usuario.getIdUser());
-            editor.putString("nome_usuario_atual", usuario.getNome());
-            editor.putString("email_usuario_atual", usuario.getEmail());
-            editor.putString("senha_usuario_atual", usuario.getSenha());
-            editor.putFloat("receitaTotal_usuario_atual", usuario.getReceitaTotal());
-            editor.putFloat("despesaTotal_usuario_atual", usuario.getDespesaTotal());
-            editor.putString("dataModificacao_usuario_atual", usuario.getDataModificação());
+            editor.putString("id", usuario.getIdUser());
+            editor.putString("nome", usuario.getNome());
+            editor.putString("email", usuario.getEmail());
+            editor.putString("senha", usuario.getSenha());
+            editor.putFloat("receitaTotal", usuario.getReceitaTotal());
+            editor.putFloat("despesaTotal", usuario.getDespesaTotal());
+            editor.putString("dataModificacao", usuario.getDataModificação());
 
             editor.commit();
 
@@ -67,6 +79,16 @@ public class MySharedPreferencs {
     }
 
     public Usuario getUsuarioAtual (){
+
+        SharedPreferences spUser = context.getSharedPreferences(USER_ATUAL_PREFERENCES, MODE_PRIVATE);
+        usuarioAtual.setIdUser(spUser.getString("id", null));
+        usuarioAtual.setNome(spUser.getString("nome", null));
+        usuarioAtual.setEmail(spUser.getString("email", null));
+        usuarioAtual.setSenha(spUser.getString("senha", null));
+        usuarioAtual.setReceitaTotal(spUser.getFloat("receitaTotal", 0f));
+        usuarioAtual.setDespesaTotal(spUser.getFloat("despesaTotal", 0f));
+        usuarioAtual.setDataModificação(spUser.getString("dataModificacao", ""));
+        spUser.registerOnSharedPreferenceChangeListener(callback);
 
         return this.usuarioAtual;
     }

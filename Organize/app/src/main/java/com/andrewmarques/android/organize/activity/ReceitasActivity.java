@@ -118,10 +118,10 @@ public class ReceitasActivity extends AppCompatActivity {
                 receitaAtualizada = receitaTotal + valorRecuperado;
 
                 if (movimentacaoDAO.salvar(movimentacao)) {
-                    FirebaseHelper.salvarMovimentacao(movimentacao);
                     atualizarReceitas(receitaAtualizada);
+                    FirebaseHelper.salvarMovimentacao(movimentacao);
+                    movimentacaoDAO.putCallBack(movimentacao, "ATU");
                 }
-
                 finish();
             }
         }

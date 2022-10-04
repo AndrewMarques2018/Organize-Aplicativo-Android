@@ -116,10 +116,11 @@ public class DespesasActivity extends AppCompatActivity {
             movimentacao.setTipo("d");
 
             despesaAtualizada = despesaTotal + valorRecuperado;
-            atualizarDespesas(despesaAtualizada);
 
             if (movimentacaoDAO.salvar(movimentacao)){
+                atualizarDespesas(despesaAtualizada);
                 FirebaseHelper.salvarMovimentacao(movimentacao);
+                movimentacaoDAO.putCallBack(movimentacao, "ATU");
             }
             finish();
         }
@@ -200,7 +201,7 @@ public class DespesasActivity extends AppCompatActivity {
     public void atualizarDespesas (Float despesaTotal){
 
         Usuario usuario = mySharedPreferencs.getUsuarioAtual();
-        usuario.setReceitaTotal(despesaTotal);
+        usuario.setDespesaTotal(despesaTotal);
         usuario.setDataModificação();
 
         if (mySharedPreferencs.salvarUsuarioAtual(usuario)){

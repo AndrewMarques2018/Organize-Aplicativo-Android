@@ -36,6 +36,10 @@ public class Usuario implements Comparable<Usuario>{
         this.dataModificação = new SimpleDateFormat("yyyy/MM/dd").format(dataAtual);
     }
 
+    public void setDataModificação(String dataModificação) {
+        this.dataModificação = dataModificação;
+    }
+
     public Usuario() {
     }
 
