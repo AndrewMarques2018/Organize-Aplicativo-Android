@@ -467,6 +467,7 @@ public class PrincipalActivity extends AppCompatActivity {
         movimentacaoDAO.clearCallBack();
         FirebaseHelper.stop();
         FirebaseHelper.signOut();
+        mySharedPreferencs.salvarUsuarioAtual(new Usuario());
         mySharedPreferencs.finalizar();
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
         finish();
