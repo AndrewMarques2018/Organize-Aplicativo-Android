@@ -72,7 +72,7 @@
         android:drawablePadding="5dp"
         android:ems="10"
         android:hint="password"
-        android:inputType="textPersonName|textPassword"
+        android:inputType="textPassword"
         android:textColor="@color/colorTextSlider"
         app:layout_constraintBottom_toTopOf="@+id/btCadastro"
         app:layout_constraintEnd_toEndOf="parent"
@@ -106,4 +106,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btCadastro" />
+
+    <ImageButton
+        android:id="@+id/btVisualizarSenha"
+        android:layout_width="45dp"
+        android:layout_height="0dp"
+        android:background="@android:color/transparent"
+        android:elevation="1dp"
+        android:paddingEnd="10dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_baseline_visibility_off_24"
+        app:layout_constraintBottom_toBottomOf="@+id/txtCadastroSenha"
+        app:layout_constraintEnd_toEndOf="@+id/txtCadastroSenha"
+        app:layout_constraintTop_toTopOf="@+id/txtCadastroSenha"
+        tools:src="@drawable/ic_baseline_visibility_off_24" />
 </androidx.constraintlayout.widget.ConstraintLayout>

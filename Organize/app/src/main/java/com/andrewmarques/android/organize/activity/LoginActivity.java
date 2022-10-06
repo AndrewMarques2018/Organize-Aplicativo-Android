@@ -5,9 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.andrewmarques.android.organize.R;
@@ -35,6 +38,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText campoEmail, campoSenha;
     private Button btLogin;
+    private ImageButton btMostrarSenha;
+    private boolean senhaVisivel;
     private Usuario usuario;
 
     @Override
@@ -45,6 +50,7 @@ public class LoginActivity extends AppCompatActivity {
         campoEmail = findViewById(R.id.txtLoginEmail);
         campoSenha = findViewById(R.id.txtLoginSenha);
         btLogin = findViewById(R.id.btLogin);
+        btMostrarSenha = findViewById(R.id.btMostrarSenha);
 
         mySharedPreferencs = new MySharedPreferencs(getApplicationContext());
 
@@ -66,6 +72,22 @@ public class LoginActivity extends AppCompatActivity {
                             "Preencha os campos",Toast.LENGTH_SHORT).show();
                 }
 
+            }
+        });
+
+        btMostrarSenha.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                senhaVisivel = !senhaVisivel;
+                if (senhaVisivel){
+                    campoSenha.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                    btMostrarSenha.setImageResource(R.drawable.ic_baseline_visibility_24);
+
+                }else {
+                    campoSenha.setInputType(129);
+                    btMostrarSenha.setImageResource(R.drawable.ic_baseline_visibility_off_24);
+                }
             }
         });
     }

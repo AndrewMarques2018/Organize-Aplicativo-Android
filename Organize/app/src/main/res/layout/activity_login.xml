@@ -74,4 +74,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtLoginSenha"
         tools:ignore="TextContrastCheck" />
+
+    <ImageButton
+        android:id="@+id/btMostrarSenha"
+        android:layout_width="48dp"
+        android:layout_height="0dp"
+        android:background="@android:color/transparent"
+        android:elevation="1dp"
+        app:layout_constraintBottom_toBottomOf="@+id/txtLoginSenha"
+        app:layout_constraintEnd_toEndOf="@+id/txtLoginSenha"
+        app:layout_constraintTop_toTopOf="@+id/txtLoginSenha"
+        app:srcCompat="@drawable/ic_baseline_visibility_off_24"
+        tools:srcCompat="@drawable/ic_baseline_visibility_off_24" />
 </androidx.constraintlayout.widget.ConstraintLayout>

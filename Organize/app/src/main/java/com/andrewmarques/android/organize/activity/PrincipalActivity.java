@@ -111,7 +111,7 @@ public class PrincipalActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        if (isOnline){
+        if (true){
             atualizarUsuario();
             verificarMovimentacoesCallBacks();
             resgatarMovimentacoesFirebase();
@@ -169,16 +169,19 @@ public class PrincipalActivity extends AppCompatActivity {
                         Usuario usuarioFirebase = snapshot.getValue(Usuario.class);
                         Usuario usuarioLocal = mySharedPreferencs.getUsuarioAtual();
 
-                        if (usuarioLocal.getIdUser() != null || usuarioLocal.getNome() == null){
-                            mySharedPreferencs.salvarUsuarioAtual(usuarioFirebase);
+                        if (usuarioLocal.getIdUser() == null || usuarioLocal.getNome() == null){
+                            if (usuarioFirebase.getNome() != null && !usuarioFirebase.getNome().equals(""))
+                                mySharedPreferencs.salvarUsuarioAtual(usuarioFirebase);
                         }
 
                         assert usuarioFirebase != null;
                         if (usuarioFirebase.compareTo(usuarioLocal) > 0){
-                            mySharedPreferencs.salvarUsuarioAtual(usuarioFirebase);
+                            if (usuarioFirebase.getNome() != null && !usuarioFirebase.getNome().equals(""))
+                                mySharedPreferencs.salvarUsuarioAtual(usuarioFirebase);
                         }else
                         if (usuarioFirebase.compareTo(usuarioLocal) < 0){
-                            FirebaseHelper.atualizarUsuario(usuarioLocal);
+                            if (usuarioLocal.getNome() != null && !usuarioLocal.getNome().equals(""))
+                                FirebaseHelper.atualizarUsuario(usuarioLocal);
                         }
                     }
 
@@ -222,8 +225,10 @@ public class PrincipalActivity extends AppCompatActivity {
                     usuario.setDespesaTotal(valorDespesaTotal);
                     usuario.setDataModificação();
 
-                    mySharedPreferencs.salvarUsuarioAtual(usuario);
-                    FirebaseHelper.atualizarUsuario(usuario);
+                    if (usuario.getNome() != null && !usuario.getNome().equals("")){
+                        mySharedPreferencs.salvarUsuarioAtual(usuario);
+                        FirebaseHelper.atualizarUsuario(usuario);
+                    }
                 }
 
                 @Override
@@ -273,11 +278,13 @@ public class PrincipalActivity extends AppCompatActivity {
                                     if (movimentacao.getTipo().equals("r")){
                                         Intent intent = new Intent(PrincipalActivity.this, ReceitasActivity.class);
                                         intent.putExtra("movimentacaoSelecionada", movimentacao);
+                                        intent.putExtra("mesAno", mesAnoSelecionado);
                                         startActivity(intent);
                                     }else
                                     if (movimentacao.getTipo().equals("d")) {
                                         Intent intent = new Intent(PrincipalActivity.this, DespesasActivity.class);
                                         intent.putExtra("movimentacaoSelecionada", movimentacao);
+                                        intent.putExtra("mesAno", mesAnoSelecionado);
                                         startActivity(intent);
                                     }
 
@@ -334,9 +341,12 @@ public class PrincipalActivity extends AppCompatActivity {
                     usuario.setDataModificação();
                 }
 
-                if (mySharedPreferencs.salvarUsuarioAtual(usuario)){
-                    FirebaseHelper.atualizarUsuario(usuario);
+                if (usuario.getNome() != null && !usuario.getNome().equals("")){
+                    if (mySharedPreferencs.salvarUsuarioAtual(usuario)){
+                        FirebaseHelper.atualizarUsuario(usuario);
+                    }
                 }
+
 
                 atualizarView();
                 recuperarResumo();
@@ -439,11 +449,16 @@ public class PrincipalActivity extends AppCompatActivity {
     }
 
     public void addReceita (View view){
-        startActivity(new Intent(this, ReceitasActivity.class));
+        Intent intent = new Intent(PrincipalActivity.this, ReceitasActivity.class);
+        intent.putExtra("mesAno", mesAnoSelecionado);
+        startActivity(intent);
+
     }
 
     public void addDespesa (View view){
-        startActivity(new Intent( this, DespesasActivity.class));
+        Intent intent = new Intent(PrincipalActivity.this, DespesasActivity.class);
+        intent.putExtra("mesAno", mesAnoSelecionado);
+        startActivity(intent);
     }
 
     public void finalizarAplication (){

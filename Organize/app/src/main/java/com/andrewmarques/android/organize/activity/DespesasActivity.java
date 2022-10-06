@@ -55,7 +55,7 @@ public class DespesasActivity extends AppCompatActivity {
         movimentacaoDAO = new MovimentacaoDAO(getApplicationContext());
 
         // preencher data padrão, data atual
-        campoData.setText(DateCustom.dataAtual());
+        campoData.setText(DateCustom.mesAnoToDate((String) getIntent().getSerializableExtra("mesAno")));
 
         recuperarMovimentacao();
         recuperarDespesaTotal();

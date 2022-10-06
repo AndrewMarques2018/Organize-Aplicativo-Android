@@ -11,6 +11,17 @@ import java.text.SimpleDateFormat;
 
 public class DateCustom {
 
+    public static String mesAnoToDate (String mesAno) {
+
+        long date = System.currentTimeMillis();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String dia = getDia(simpleDateFormat.format(date));
+        String mes = mesAno.substring(0,2);
+        String ano = mesAno.substring(2,6);
+
+        return dia+"/"+mes+"/"+ano;
+    }
+
     public static String dataAtual (){
         long date = System.currentTimeMillis();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");

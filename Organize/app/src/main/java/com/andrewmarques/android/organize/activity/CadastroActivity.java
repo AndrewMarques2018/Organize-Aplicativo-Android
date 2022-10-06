@@ -3,10 +3,14 @@ package com.andrewmarques.android.organize.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.andrewmarques.android.organize.R;
@@ -35,7 +39,9 @@ public class CadastroActivity extends AppCompatActivity {
 
     private EditText campoNome, campoEmail, campoSenha;
     private Button btCadastrar;
+    private ImageButton btMostrarSenha;
     private Usuario usuario;
+    private boolean senhaVisivel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +52,7 @@ public class CadastroActivity extends AppCompatActivity {
         campoEmail = findViewById(R.id.txtCadastroEmail);
         campoSenha = findViewById(R.id.txtCadastroSenha);
         btCadastrar = findViewById(R.id.btCadastro);
+        btMostrarSenha = findViewById(R.id.btVisualizarSenha);
 
         mySharedPreferencs = new MySharedPreferencs(getApplicationContext());
 
@@ -66,6 +73,22 @@ public class CadastroActivity extends AppCompatActivity {
                             "Preencha os campos",Toast.LENGTH_SHORT).show();
                 }
 
+            }
+        });
+
+        btMostrarSenha.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                senhaVisivel = !senhaVisivel;
+                if (senhaVisivel){
+                    campoSenha.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                    btMostrarSenha.setImageResource(R.drawable.ic_baseline_visibility_24);
+
+                }else {
+                    campoSenha.setInputType(129);
+                    btMostrarSenha.setImageResource(R.drawable.ic_baseline_visibility_off_24);
+                }
             }
         });
     }
