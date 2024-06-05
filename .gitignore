@@ -1,23 +1,35 @@
-# Compiled class file
-*.class
-
-# Log file
+# Android Studio specific
+.idea/
+*.iml
+.gradle/
+local.properties
+/.cxx/
+/.externalNativeBuild/
 *.log
+*.hprof
+.gradle/
+build/
+captures/
+.idea/caches
+.idea/libraries
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/gradle.xml
+.idea/compiler.xml
+.idea/copyright/
+.idea/encodings.xml
+.idea/misc.xml
+.idea/runConfigurations/
+/.idea/assetWizardSettings.xml
+.DS_Store
 
-# BlueJ files
-*.ctxt
+# Keystore files
+*.jks
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# External native build folder generated in Android Studio 2.2+
+.cxx/
 
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+# Google Services (e.g. APIs or Firebase)
+google-services.json

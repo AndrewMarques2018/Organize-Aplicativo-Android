@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackGround"
+    android:orientation="vertical"
+    tools:context=".activity.PrincipalActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Theme.Organize.AppBarOverlay"
+        app:elevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:elevation="0dp"
+            app:popupTheme="@style/Theme.Organize.PopupOverlay" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="@color/colorPrimary"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+
+        <TextView
+            android:id="@+id/txtSaudacao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Carregando ..."
+            android:textAlignment="center"
+            android:textColor="@color/colorBackGround"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/textView12"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="saldo geral"
+            android:textAlignment="center"
+            android:textColor="@color/colorBackGround" />
+
+        <TextView
+            android:id="@+id/txtSaldoGeral"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="R$ 0"
+            android:textAlignment="center"
+            android:textColor="@color/colorBackGround"
+            android:textSize="24sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:background="@color/colorPrimary"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+        <TextView
+            android:id="@+id/txtValorSaldoMensal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="R$ 0,00"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@color/colorBackGround"
+            android:textSize="16sp"
+            android:textStyle="bold|italic" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btPrev"
+        android:layout_width="50dp"
+        android:layout_height="0dp"
+        android:background="@drawable/ic_esquerda_preto"
+        app:layout_constraintBottom_toBottomOf="@+id/txtMesAno"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txtMesAno" />
+
+    <Button
+        android:id="@+id/btNext"
+        android:layout_width="50dp"
+        android:layout_height="0dp"
+        android:background="@drawable/ic_direita_preto"
+        app:layout_constraintBottom_toBottomOf="@+id/txtMesAno"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+
+    <TextView
+        android:id="@+id/txtMesAno"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Mês Ano"
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toStartOf="@+id/btNext"
+        app:layout_constraintStart_toEndOf="@+id/btPrev"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycleMovimentos"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtMesAno" >
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/fabMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        fab:menu_animationDelayPerItem="50"
+        fab:menu_backgroundColor="@android:color/transparent"
+        fab:menu_buttonSpacing="0dp"
+        fab:menu_colorNormal="@color/colorAccent"
+        fab:menu_colorPressed="@color/colorAccent"
+        fab:menu_colorRipple="#99FFFFFF"
+        fab:menu_fab_label=""
+        fab:menu_fab_size="normal"
+        fab:menu_icon="@drawable/fab_add"
+        fab:menu_labels_colorNormal="#333333"
+        fab:menu_labels_colorPressed="#444444"
+        fab:menu_labels_colorRipple="#66FFFFFF"
+        fab:menu_labels_cornerRadius="3dp"
+        fab:menu_labels_ellipsize="none"
+        fab:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
+        fab:menu_labels_margin="0dp"
+        fab:menu_labels_maxLines="-1"
+        fab:menu_labels_padding="8dp"
+        fab:menu_labels_paddingBottom="4dp"
+        fab:menu_labels_paddingLeft="8dp"
+        fab:menu_labels_paddingRight="8dp"
+        fab:menu_labels_paddingTop="4dp"
+        fab:menu_labels_position="left"
+        fab:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
+        fab:menu_labels_showShadow="true"
+        fab:menu_labels_singleLine="false"
+        fab:menu_labels_textColor="#FFFFFF"
+        fab:menu_labels_textSize="14sp"
+        fab:menu_openDirection="up"
+        fab:menu_shadowColor="#66000000"
+        fab:menu_shadowRadius="4dp"
+        fab:menu_shadowXOffset="1dp"
+        fab:menu_shadowYOffset="3dp"
+        fab:menu_showShadow="true">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/menu_despesa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="adicionarDespesa"
+            android:src="@drawable/ic_add_branco"
+            app:fab_colorNormal="@color/colorPrimaryDespesa"
+            fab:fab_label="Despesa"
+            fab:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/menu_receita"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="adicionarReceita"
+            android:src="@drawable/ic_add_branco"
+            app:fab_colorNormal="@color/colorPrimaryReceita"
+            fab:fab_label="Ganho"
+            fab:fab_size="mini" />
+
+    </com.github.clans.fab.FloatingActionMenu>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
